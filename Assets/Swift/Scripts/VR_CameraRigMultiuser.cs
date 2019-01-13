@@ -62,14 +62,14 @@ namespace Swift
             SteamVRLeft.GetComponent<SteamVR_Behaviour_Pose>().enabled = isLocalPlayer;
 
             // Left SteamVR_RenderModel activation if UserMe, deactivation if UserOther
-            SteamVRLeft.GetComponentInChildren<SteamVR_RenderModel>().enabled = isLocalPlayer;
+            //SteamVRLeft.GetComponentInChildren<SteamVR_RenderModel>().enabled = isLocalPlayer;
             SteamVRLeft.transform.Find("Model").gameObject.SetActive(isLocalPlayer);
 
             // Right activation if UserMe, deactivation if UserOther
             SteamVRRight.GetComponent<SteamVR_Behaviour_Pose>().enabled = isLocalPlayer;
 
             // Left SteamVR_RenderModel activation if UserMe, deactivation if UserOther
-            SteamVRRight.GetComponentInChildren<SteamVR_RenderModel>().enabled = isLocalPlayer;
+            //SteamVRRight.GetComponentInChildren<SteamVR_RenderModel>().enabled = isLocalPlayer;
             SteamVRRight.transform.Find("Model").gameObject.SetActive(isLocalPlayer);
 
             // Camera activation if UserMe, deactivation if UserOther
