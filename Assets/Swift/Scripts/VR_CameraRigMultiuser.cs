@@ -96,5 +96,22 @@ namespace Swift
         {
 
         }
+
+        #region Networking
+        [Command]
+        public void CmdTakeControl(GameObject go)
+        {
+            Debug.Log(go.name);
+            NetworkIdentity ni = go.GetComponent<NetworkIdentity>();
+            ni.AssignClientAuthority(base.connectionToClient);
+        }
+
+        [Command]
+        public void CmdLoseControl(GameObject go)
+        {
+            NetworkIdentity ni = go.GetComponent<NetworkIdentity>();
+            ni.RemoveClientAuthority(base.connectionToClient);
+        }
+        #endregion
     }
 }

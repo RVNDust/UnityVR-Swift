@@ -1,12 +1,13 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Networking;
 using Valve.VR;
 
 namespace Swift
 {
     [RequireComponent(typeof(ToolsManager))]
-    public class ToolBehaviour : MonoBehaviour
+    public class ToolBehaviour : NetworkBehaviour
     {
         protected SteamVR_Input_Sources controller;
         protected ToolsManager manager;
@@ -43,7 +44,7 @@ namespace Swift
         {
             if (!collidedObjects.Contains(other.gameObject))
             {
-                collidedObjects.Add(other.gameObject);
+                collidedObjects.Add(other.GetComponentInParent<Rigidbody>().gameObject);
             }
         }
 

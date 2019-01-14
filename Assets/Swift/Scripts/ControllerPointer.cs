@@ -9,6 +9,7 @@ namespace Swift
         public Color Color;
         public float Thickness = 0.002f;
         public float Length = 100f;
+        public int TeleportMask;
 
         GameObject holder;
         GameObject pointer;
@@ -30,6 +31,7 @@ namespace Swift
         // Use this for initialization
         void Start()
         {
+            TeleportMask = LayerMask.GetMask("CanTeleport");
             ActivatePointer();
         }
 
@@ -70,7 +72,7 @@ namespace Swift
             Ray raycast = new Ray(transform.position, transform.forward);
 
             RaycastHit hitObject;
-            bool rayHit = Physics.Raycast(raycast, out hitObject);
+            bool rayHit = Physics.Raycast(raycast, out hitObject, Mathf.Infinity, TeleportMask);
             if (rayHit)
             {
                 if (hitObject.collider.gameObject.GetComponent<TeleportArea>())
@@ -103,7 +105,6 @@ namespace Swift
 
             holder = new GameObject();
             holder.name = "Pointer";
-            holder.layer = LayerMask.GetMask("Ignore Raycast");
             holder.transform.parent = this.transform;
             holder.transform.localPosition = Vector3.zero;
 

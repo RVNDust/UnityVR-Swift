@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Networking;
 using Valve.VR;
 
 namespace Swift
@@ -8,10 +9,23 @@ namespace Swift
     public class ToolGrabObject : ToolBehaviour
     {
         List<GameObject> heldObjects =  new List<GameObject>();
+        GameObject vrPlayer;
 
         void Awake()
         {
             StartBehaviour();
+        }
+
+        void Start()
+        {
+            GameObject[] playersEntities = GameObject.FindGameObjectsWithTag("Player");
+            foreach (var player in playersEntities)
+            {
+                if (player.GetComponent<NetworkIdentity>().isLocalPlayer)
+                {
+                    vrPlayer = player;
+                }
+            }
         }
 
         void OnTriggerEnter(Collider other)
@@ -36,6 +50,7 @@ namespace Swift
                         VR_Grabbable grabbableObject = item.GetComponent<VR_Grabbable>();
                         if (grabbableObject != null)
                         {
+                            vrPlayer.GetComponent<VR_CameraRigMultiuser>().CmdTakeControl(grabbableObject.gameObject);
                             grabbableObject.Grab(gameObject);
                             heldObjects.Add(grabbableObject.gameObject);
                             break;
@@ -50,6 +65,7 @@ namespace Swift
                     VR_Grabbable grabbableObject = item.GetComponent<VR_Grabbable>();
                     grabbableObject.Ungrab(gameObject);
                     heldObjects.Remove(grabbableObject.gameObject);
+                    vrPlayer.GetComponent<VR_CameraRigMultiuser>().CmdLoseControl(item);
                 }
             }
         }
