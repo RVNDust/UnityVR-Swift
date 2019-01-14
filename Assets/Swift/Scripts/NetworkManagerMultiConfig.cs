@@ -10,6 +10,7 @@ namespace Swift
     {
         public GameObject PlayerVR;
         public GameObject PlayerThirdPerson;
+        public Vector3 SpawnPoint = Vector3.zero;
         private short customPlayerControllerId = 1;
 
         // Use this for initialization
@@ -73,7 +74,7 @@ namespace Swift
                     prefabToSpawn = isVRDeviceActive ? PlayerVR : PlayerThirdPerson;
                     break;
             }
-            var player = (GameObject)GameObject.Instantiate(prefabToSpawn, Vector3.zero, Quaternion.identity);
+            var player = (GameObject)GameObject.Instantiate(prefabToSpawn, SpawnPoint, Quaternion.identity);
             if (autoCreatePlayer) NetworkServer.AddPlayerForConnection(conn, player, playerControllerId);
             Debug.Log("Client has requested to get his player added to the game " + player);
         }
