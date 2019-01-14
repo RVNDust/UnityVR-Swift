@@ -30,6 +30,7 @@ namespace Swift
         /// <param name="controller">controller on which the object will be attached</param>
         public void Grab(GameObject controller)
         {
+            Debug.Log("Call grab method");
             interactable.GetOriginalState();
 
             interactable.rigidbody.isKinematic = true;
@@ -51,13 +52,13 @@ namespace Swift
         {
             if(controllerReference == controller)
             {
-                controllerReference = null;
-
                 interactable.SetOriginalState();
 
                 //Throw object
                 interactable.rigidbody.velocity = controllerReference.GetComponent<SteamVR_Behaviour_Pose>().GetComponent<SteamVR_Behaviour_Pose>().GetVelocity();
                 interactable.rigidbody.angularVelocity = controllerReference.GetComponent<SteamVR_Behaviour_Pose>().GetComponent<SteamVR_Behaviour_Pose>().GetAngularVelocity();
+
+                controllerReference = null;
             }
             if (onUngrabEvent != null)
             {

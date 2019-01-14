@@ -103,6 +103,7 @@ namespace Swift
 
             holder = new GameObject();
             holder.name = "Pointer";
+            holder.layer = LayerMask.GetMask("Ignore Raycast");
             holder.transform.parent = this.transform;
             holder.transform.localPosition = Vector3.zero;
 

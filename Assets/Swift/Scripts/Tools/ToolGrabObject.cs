@@ -9,23 +9,71 @@ namespace Swift
     {
         List<GameObject> heldObjects =  new List<GameObject>();
 
-        void OnTriggerStay(Collider collider)
+        void Awake()
         {
-            VR_Grabbable grabbableObject = collider.GetComponent<VR_Grabbable>();
-            if(grabbableObject != null)
+            StartBehaviour();
+        }
+
+        void OnTriggerEnter(Collider other)
+        {
+            TriggerEnterBehaviour(other);
+        }
+
+        void OnTriggerExit(Collider other)
+        {
+            TriggerExitBehaviour(other);
+        }
+
+        void Update()
+        {
+            if (SteamVR_Input._default.inActions.GrabGrip.GetStateDown(controller))
             {
-                //Check if button for grab is used, if true grab an object, if not ungrab it
-                if(SteamVR_Input._default.inActions.GrabGrip.GetState(controller))
+                Debug.Log("Trying to grab something");
+                foreach (var item in collidedObjects)
                 {
-                    grabbableObject.Grab(gameObject);
-                    heldObjects.Add(grabbableObject.gameObject);
+                    if(item != null)
+                    {
+                        VR_Grabbable grabbableObject = item.GetComponent<VR_Grabbable>();
+                        if (grabbableObject != null)
+                        {
+                            grabbableObject.Grab(gameObject);
+                            heldObjects.Add(grabbableObject.gameObject);
+                            break;
+                        }
+                    }
                 }
-                else
+            }
+            else if (SteamVR_Input._default.inActions.GrabGrip.GetStateUp(controller))
+            {
+                foreach (var item in heldObjects)
                 {
+                    VR_Grabbable grabbableObject = item.GetComponent<VR_Grabbable>();
                     grabbableObject.Ungrab(gameObject);
                     heldObjects.Remove(grabbableObject.gameObject);
                 }
             }
         }
+
+        //void OnTriggerEnter(Collider other)
+        //{
+        //    Debug.Log("Trigger stay");
+        //    VR_Grabbable grabbableObject = other.gameObject.GetComponent<VR_Grabbable>();
+        //    if(grabbableObject != null)
+        //    {
+        //        Debug.Log("Inside a grabbable object");
+        //        //Check if button for grab is used, if true grab an object, if not ungrab it
+        //        if(SteamVR_Input._default.inActions.GrabGrip.GetState(controller))
+        //        {
+        //            Debug.Log("Trying to grab something");
+        //            grabbableObject.Grab(gameObject);
+        //            heldObjects.Add(grabbableObject.gameObject);
+        //        }
+        //        else
+        //        {
+        //            grabbableObject.Ungrab(gameObject);
+        //            heldObjects.Remove(grabbableObject.gameObject);
+        //        }
+        //    }
+        //}
     }
 }

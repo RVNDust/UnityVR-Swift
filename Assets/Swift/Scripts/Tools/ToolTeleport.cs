@@ -10,6 +10,11 @@ namespace Swift
         ControllerPointer cp;
         GameObject cameraRig;
 
+        void Awake()
+        {
+            StartBehaviour();
+        }
+
         void Start()
         {
             GameObject[] playersEntities = GameObject.FindGameObjectsWithTag("Player");
