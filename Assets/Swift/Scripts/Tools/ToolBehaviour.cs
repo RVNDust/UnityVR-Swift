@@ -13,7 +13,7 @@ namespace Swift
         protected SteamVR_Input_Sources controller;
 
         // Use this for initialization
-        void Awake()
+        void Start()
         {
             manager = GetComponent<ToolsManager>();
             controller = manager.controller;

@@ -15,10 +15,16 @@ namespace Swift
             if(grabbableObject != null)
             {
                 //Check if button for grab is used, if true grab an object, if not ungrab it
-                //if(GetComponent<SteamVR_Input>())
-
-                //grabbableObject.Grab(gameObject);
-                //grabbableObject.Ungrab(gameObject);
+                if(SteamVR_Input._default.inActions.GrabGrip.GetState(controller))
+                {
+                    grabbableObject.Grab(gameObject);
+                    heldObjects.Add(grabbableObject.gameObject);
+                }
+                else
+                {
+                    grabbableObject.Ungrab(gameObject);
+                    heldObjects.Remove(grabbableObject.gameObject);
+                }
             }
         }
     }
