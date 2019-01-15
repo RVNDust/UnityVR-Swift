@@ -13,10 +13,19 @@ namespace Swift
         public List<GameObject> FlowpathE = new List<GameObject>();
 
         public Dictionary<Product, List<GameObject>> productFlows = new Dictionary<Product, List<GameObject>>();
+        public Dictionary<Product, Color> productColor = new Dictionary<Product, Color>();
+
+        public Material baseMaterial;
 
         // Use this for initialization
         void Start()
         {
+            productColor.Add(Product.A, Color.blue);
+            productColor.Add(Product.B, Color.green);
+            productColor.Add(Product.C, Color.red);
+            productColor.Add(Product.D, Color.yellow);
+            productColor.Add(Product.E, Color.magenta);
+            
             CreateFlowPath(FlowpathA, Product.A);
             CreateFlowPath(FlowpathB, Product.B);
             CreateFlowPath(FlowpathC, Product.C);
@@ -28,6 +37,9 @@ namespace Swift
         public void CreateFlowPath(List<GameObject> flowpathList, Product productType)
         {
             FlowPoint lastFlowpoint = null;
+            Color flowColor = productColor[productType];
+            Material mat = new Material(baseMaterial);
+            mat.color = flowColor;
             foreach (GameObject item in flowpathList)
             {
                 FlowPoint[] flowpoints = item.GetComponentsInChildren<FlowPoint>();
@@ -49,8 +61,7 @@ namespace Swift
                     LineRenderer lr = flowpath.AddComponent<LineRenderer>();
                     Vector3[] flowpathPositions = {enter.transform.position, lastFlowpoint.transform.position};
                     lr.SetPositions(flowpathPositions);
-                    lr.startColor = Color.magenta;
-                    lr.endColor = Color.magenta;
+                    lr.material = mat;
                     lr.startWidth = 0.15f;
                     lr.endWidth = 0.15f;
 
