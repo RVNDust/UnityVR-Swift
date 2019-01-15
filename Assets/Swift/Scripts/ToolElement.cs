@@ -11,7 +11,6 @@ namespace Swift
         public string name;
         public Sprite icon;
         public GameObject behaviourContainer;
-        public string behaviourName;
         [HideInInspector] public ToolBehaviour behaviour;
 
         public void UpdateBehaviour()
