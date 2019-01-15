@@ -9,17 +9,28 @@ namespace Swift
 {
     public class JsonUtils : MonoBehaviour {
 
-        public Button button;
-        public Canvas canvas;
+        public Button ButtonTemplate; //For the save selection button
+        public GameObject GridForButtons; //Canvas with every buttons
         GameObject[] GOmachines;
+        GameObject dataManager;
+        GameObject saveConfig;
+        GameObject loadConfig;
+        GameObject scrollView;
 
-	    // Use this for initialization
-	    void Start () {
+        private void Awake()
+        {
+            dataManager = GameObject.Find("DataManager");
+            saveConfig = GameObject.Find("Button_SaveConfig");
+            loadConfig = GameObject.Find("Button_LoadConfig");
+            scrollView = GameObject.Find("ScrollView");
+        }
+        void Start () {
 	        if(GOmachines == null)
             {
                 GOmachines = GameObject.FindGameObjectsWithTag("Machine");
             }
-	    }
+            scrollView.SetActive(false);
+        }
 
         /// <summary>
         /// Generates a file name using the following convention : Swift YYYY MM DD – HH mm ss
@@ -34,6 +45,9 @@ namespace Swift
             return fileName;
         }
 
+        /// <summary>
+        /// Save the machines positions & rotation in a Json File
+        /// </summary>
         public void SaveMachineConfigToJson()
         {
             string JsonToSave = "";
@@ -58,39 +72,55 @@ namespace Swift
         }
 
         /// <summary>
-        /// Display them on the selection pannel
+        /// Display the list of saved configuration files on the selection pannel
         /// </summary>
         public void LoadAndDisplayMachineConfigs()
         {
+            //Deactivate the Load & Save buttons and activate the ScrollView
+            saveConfig.SetActive(false);
+            loadConfig.SetActive(false);
+            scrollView.SetActive(true);
             //Gets all the json files in the StreamingAssets/SavedLayout/ repertory
             string[] configFiles = Directory.GetFiles(Application.streamingAssetsPath + "/SavedLayout/", "*.json");
-            foreach (var fileName in configFiles)
+            //For each config file we create a button with the name of the file
+            foreach (var filePath in configFiles)
             {
-                Button newButton = Instantiate(button) as Button;
-                newButton.transform.SetParent(canvas.transform, false);
-                Debug.Log(Path.GetFileNameWithoutExtension(fileName));
+                string fileName = Path.GetFileNameWithoutExtension(filePath);
+                Button newButton = Instantiate(ButtonTemplate) as Button;
+                //Set the parent element of the button
+                newButton.transform.SetParent(GridForButtons.transform, false);
+                newButton.GetComponentInChildren<Text>().text = fileName;
+                //Puts a listener on the button to call LoadSelectedMachineConfig if the button is clicked
+                newButton.onClick.AddListener(() => LoadSelectedMachineConfig(filePath));
             }
-            //TODO foreach files, instanciate [Button/text = file.name] in MachineConfigSelectZone
-        }
-
-        public void CreateButton(Transform panel, Vector3 position, Vector2 size, UnityEngine.Events.UnityAction method)
-        {
-            GameObject button = new GameObject();
-            button.transform.parent = panel;
-            button.AddComponent<RectTransform>();
-            button.AddComponent<Button>();
-            button.transform.position = position;
-            //button.GetComponent<RectTransform>().SetSizeWithCurrentAnchors(size);
-            button.GetComponent<Button>().onClick.AddListener(method);
         }
 
         /// <summary>
-        /// Load the selected file and move machines
+        /// Load the selected file and move the machines
         /// </summary>
-        public void LoadSelectedMachineConfig(string fileName)
-        {
-            Debug.Log("Hello work, " + fileName);
-            //TODO open the file, put the datas in the classes, foreach gameobjectWithTag("Machine") change Transform/Rotation
+        public void LoadSelectedMachineConfig(string filePath)
+        { 
+           if (File.Exists(filePath))
+            {
+                //read the json file and put it in dataAsJson
+                string dataAsJson = File.ReadAllText(filePath);
+                //Pass the json to JsonUtility and create a RootObject (the list of every machines in the savefile)
+                RootObject machinesJson = JsonUtility.FromJson<RootObject>(dataAsJson);
+                //For each machine saved we change the Pos/Rot values of the corresponding GameObject
+                foreach (var machine in machinesJson.machinesList)
+                {
+                    var tempMachine = GameObject.Find(machine.MachineName);
+                    tempMachine.transform.position = machine.MachinePosition;
+                    tempMachine.transform.rotation = machine.MachineRotation;
+                }
+            }
+            else
+            {
+                Debug.Log("Path given not found");
+            }
+            saveConfig.SetActive(true);
+            loadConfig.SetActive(true);
+            scrollView.SetActive(false);
         }
 
     }
