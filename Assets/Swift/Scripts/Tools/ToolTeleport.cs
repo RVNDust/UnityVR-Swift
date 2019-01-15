@@ -54,7 +54,10 @@ namespace Swift
 		{
             if(cp.CanTeleport)
             {
-                cameraRig.transform.position = cp.TargetPosition;
+                Vector3 cameraRef = cameraRig.GetComponent<VR_CameraRigMultiuser>().SteamVRCamera.transform.localPosition;
+                Vector3 targetPos = cp.TargetPosition;
+                Vector3 offset = new Vector3(targetPos.x - cameraRef.x, targetPos.y, targetPos.z - cameraRef.z);
+                cameraRig.transform.position = offset;
                 cp.DesactivatePointer();
             }
             Destroy(cp);

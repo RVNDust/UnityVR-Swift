@@ -75,17 +75,14 @@ namespace Swift
             bool rayHit = Physics.Raycast(raycast, out hitObject, Mathf.Infinity, TeleportMask);
             if (rayHit)
             {
-                if (hitObject.collider.gameObject.GetComponent<TeleportArea>())
-                {
-                    CanTeleport = true;
-                    TargetPosition = hitObject.point;
-                    UpdateColor(Color.green);
-                }
-                else
-                {
-                    CanTeleport = false;
-                    UpdateColor(Color.red);
-                }
+                CanTeleport = true;
+                TargetPosition = hitObject.point;
+                UpdateColor(Color.green);
+            }
+            else
+            {
+                CanTeleport = false;
+                UpdateColor(Color.red);
             }
 
             float beamLength = GetBeamLength(rayHit, hitObject);
@@ -94,8 +91,10 @@ namespace Swift
 
         public void UpdateColor(Color color)
         {
-            pointer.GetComponent<MeshRenderer>().material.SetColor("_Color", color);
-            cursor.GetComponent<MeshRenderer>().material.SetColor("_Color", color);
+            if(pointer != null)
+                pointer.GetComponent<MeshRenderer>().material.SetColor("_Color", color);
+            if(cursor != null)
+                cursor.GetComponent<MeshRenderer>().material.SetColor("_Color", color);
         }
 
         public void ActivatePointer()

@@ -81,13 +81,16 @@ namespace Swift
 
                 // Create the model of the LEFT Hand for the UserOther, use a SteamVR model  Assets/SteamVR/Models/vr_glove_left_model_slim.fbx
                 var modelLeft = Instantiate(UserOtherLeftHandModel);
+                
                 // Put it as a child of the SteamVRLeft Game Object
                 modelLeft.transform.parent = SteamVRLeft.transform;
-
+                modelLeft.transform.localPosition = Vector3.zero;
+                
                 // Create the model of the RIGHT Hand for the UserOther Assets/SteamVR/Models/vr_glove_right_model_slim.fbx
                 var modelRight = Instantiate(UserOtherRightHandModel);
                 // Put it as a child of the SteamVRRight Game Object
                 modelRight.transform.parent = SteamVRRight.transform;
+                modelRight.transform.localPosition = Vector3.zero;
             }
         }
 

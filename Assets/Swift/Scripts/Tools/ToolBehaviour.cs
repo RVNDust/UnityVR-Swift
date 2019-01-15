@@ -12,7 +12,6 @@ namespace Swift
         protected SteamVR_Input_Sources controller;
         protected ToolsManager manager;
         protected List<GameObject> collidedObjects = new List<GameObject>();
-        public List<string> ignoredLayers = new List<string>();
 
         // Use this for initialization
         void Awake()
@@ -27,8 +26,6 @@ namespace Swift
         {
             manager = GetComponent<ToolsManager>();
             controller = GetComponent<SteamVR_Behaviour_Pose>().inputSource;
-
-            ignoredLayers.Add("Ignore Raycast");
         }
 
         void OnTriggerEnter(Collider other)
@@ -42,9 +39,15 @@ namespace Swift
         /// <param name="other"></param>
         protected void TriggerEnterBehaviour(Collider other)
         {
-            if (!collidedObjects.Contains(other.gameObject))
+            GameObject container = other.GetComponentInParent<Rigidbody>().gameObject;
+            if (!collidedObjects.Contains(container) && container != null)
             {
-                collidedObjects.Add(other.GetComponentInParent<Rigidbody>().gameObject);
+                collidedObjects.Add(container);
+                VR_InteractableObject io = container.GetComponent<VR_InteractableObject>();
+                if(io != null)
+                {
+                    io.ActivateHighlight();
+                }
             }
         }
 
@@ -59,10 +62,28 @@ namespace Swift
         /// <param name="other"></param>
         protected void TriggerExitBehaviour(Collider other)
         {
-            if (collidedObjects.Contains(other.gameObject))
+            Rigidbody containerRb = other.GetComponentInParent<Rigidbody>();
+            if (collidedObjects.Contains(containerRb.gameObject) && containerRb != null)
             {
-                collidedObjects.Remove(other.gameObject);
+                GameObject container = containerRb.gameObject;
+                collidedObjects.Remove(container);
+                VR_InteractableObject io = container.GetComponent<VR_InteractableObject>();
+                if (io != null)
+                {
+                    io.DesactivateHighlight();
+                }
             }
         }
+
+        public virtual void ActivateTool(GameObject goRef)
+        {
+            goRef.AddComponent <ToolBehaviour> ();
+        }
+
+        public virtual void DesactivateTool(GameObject goRef)
+        {
+            Destroy(goRef.GetComponent<ToolBehaviour>());
+        }
+        
     }
 }

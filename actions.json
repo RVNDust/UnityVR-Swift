@@ -36,6 +36,15 @@
       "requirement": "optional"
     },
     {
+      "name": "/actions/default/in/RadialMenu",
+      "type": "vector2",
+      "requirement": "suggested"
+    },
+    {
+      "name": "/actions/default/in/ToolsMenu",
+      "type": "boolean"
+    },
+    {
       "name": "/actions/default/out/Haptic",
       "type": "vibration"
     },

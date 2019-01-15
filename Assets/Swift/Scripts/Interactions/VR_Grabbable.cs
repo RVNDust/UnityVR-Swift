@@ -18,10 +18,34 @@ namespace Swift
 
         private VR_InteractableObject interactable;
         private GameObject controllerReference;
+        private Vector3 shrinkVelocity;
+        private Vector3 originalScale;
+        private Vector3 shrinkScale;
+        [Range(1, 10)] public float shrinkFactor = 10;
+        public bool IsGrabbed;
 
         void Awake()
         {
             interactable = GetComponent<VR_InteractableObject>();
+        }
+
+        void Start()
+        {
+            originalScale = gameObject.transform.localScale;
+            shrinkScale = originalScale / shrinkFactor;
+        }
+
+        void Update()
+        {
+            if(IsGrabbed)
+            {
+                Debug.Log("Shrink");
+                gameObject.transform.localScale = Vector3.SmoothDamp(gameObject.transform.localScale, shrinkScale, ref shrinkVelocity, 0.5f);
+            }
+            else
+            {
+                gameObject.transform.localScale = Vector3.SmoothDamp(gameObject.transform.localScale, originalScale, ref shrinkVelocity, 0.5f);
+            }
         }
 
         /// <summary>

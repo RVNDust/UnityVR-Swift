@@ -52,6 +52,7 @@ namespace Swift
                         {
                             vrPlayer.GetComponent<VR_CameraRigMultiuser>().CmdTakeControl(grabbableObject.gameObject);
                             grabbableObject.Grab(gameObject);
+                            grabbableObject.IsGrabbed = true;
                             heldObjects.Add(grabbableObject.gameObject);
                             break;
                         }
@@ -64,32 +65,21 @@ namespace Swift
                 {
                     VR_Grabbable grabbableObject = item.GetComponent<VR_Grabbable>();
                     grabbableObject.Ungrab(gameObject);
-                    heldObjects.Remove(grabbableObject.gameObject);
+                    grabbableObject.IsGrabbed = false;
                     vrPlayer.GetComponent<VR_CameraRigMultiuser>().CmdLoseControl(item);
                 }
+                heldObjects.Clear();
             }
         }
 
-        //void OnTriggerEnter(Collider other)
-        //{
-        //    Debug.Log("Trigger stay");
-        //    VR_Grabbable grabbableObject = other.gameObject.GetComponent<VR_Grabbable>();
-        //    if(grabbableObject != null)
-        //    {
-        //        Debug.Log("Inside a grabbable object");
-        //        //Check if button for grab is used, if true grab an object, if not ungrab it
-        //        if(SteamVR_Input._default.inActions.GrabGrip.GetState(controller))
-        //        {
-        //            Debug.Log("Trying to grab something");
-        //            grabbableObject.Grab(gameObject);
-        //            heldObjects.Add(grabbableObject.gameObject);
-        //        }
-        //        else
-        //        {
-        //            grabbableObject.Ungrab(gameObject);
-        //            heldObjects.Remove(grabbableObject.gameObject);
-        //        }
-        //    }
-        //}
+        public override void ActivateTool(GameObject goRef)
+        {
+            goRef.AddComponent<ToolGrabObject>();
+        }
+
+        public override void DesactivateTool(GameObject goRef)
+        {
+            Destroy(goRef.GetComponent<ToolGrabObject>());
+        }
     }
 }
