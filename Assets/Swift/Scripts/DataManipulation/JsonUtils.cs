@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -9,20 +10,24 @@ namespace Swift
 {
     public class JsonUtils : MonoBehaviour {
 
-        public Button ButtonTemplate; //For the save selection button
+        public GameObject PopUpNotif;
+        public Button ButtonTemplate; //For the save_selection button
         public GameObject GridForButtons; //Canvas with every buttons
         GameObject[] GOmachines;
         GameObject dataManager;
         GameObject saveConfig;
         GameObject loadConfig;
         GameObject scrollView;
+        Animator popupNotifAnim;
 
+        bool configLoaded = false;
         private void Awake()
         {
             dataManager = GameObject.Find("DataManager");
             saveConfig = GameObject.Find("Button_SaveConfig");
             loadConfig = GameObject.Find("Button_LoadConfig");
             scrollView = GameObject.Find("ScrollView");
+            popupNotifAnim = PopUpNotif.GetComponent<Animator>();
         }
         void Start () {
 	        if(GOmachines == null)
@@ -66,9 +71,16 @@ namespace Swift
 
                 machinesJson.machinesList.Add(currentMachine);
             }
-            
             JsonToSave = JsonUtility.ToJson(machinesJson);
             File.WriteAllText(filePath, JsonToSave);
+            popupNotifAnim.SetBool("active", true);
+            StartCoroutine(addDelay(2f));
+        }
+
+        IEnumerator addDelay(float delay)
+        {
+            yield return new WaitForSeconds(2f);
+            popupNotifAnim.SetBool("active", false);
         }
 
         /// <summary>
@@ -80,18 +92,23 @@ namespace Swift
             saveConfig.SetActive(false);
             loadConfig.SetActive(false);
             scrollView.SetActive(true);
-            //Gets all the json files in the StreamingAssets/SavedLayout/ repertory
-            string[] configFiles = Directory.GetFiles(Application.streamingAssetsPath + "/SavedLayout/", "*.json");
-            //For each config file we create a button with the name of the file
-            foreach (var filePath in configFiles)
+            
+            if(!configLoaded)
             {
-                string fileName = Path.GetFileNameWithoutExtension(filePath);
-                Button newButton = Instantiate(ButtonTemplate) as Button;
-                //Set the parent element of the button
-                newButton.transform.SetParent(GridForButtons.transform, false);
-                newButton.GetComponentInChildren<Text>().text = fileName;
-                //Puts a listener on the button to call LoadSelectedMachineConfig if the button is clicked
-                newButton.onClick.AddListener(() => LoadSelectedMachineConfig(filePath));
+                configLoaded = true;
+                //Gets all the json files in the StreamingAssets/SavedLayout/ repertory
+                string[] configFiles = Directory.GetFiles(Application.streamingAssetsPath + "/SavedLayout/", "*.json");
+                //For each config file we create a button with the name of the file
+                foreach (var filePath in configFiles)
+                {
+                    string fileName = Path.GetFileNameWithoutExtension(filePath);
+                    Button newButton = Instantiate(ButtonTemplate) as Button;
+                    //Set the parent element of the button
+                    newButton.transform.SetParent(GridForButtons.transform, false);
+                    newButton.GetComponentInChildren<TextMeshProUGUI>().text = fileName;
+                    //Puts a listener on the button to call LoadSelectedMachineConfig if the button is clicked
+                    newButton.onClick.AddListener(() => LoadSelectedMachineConfig(filePath));
+                }
             }
         }
 
