@@ -15,7 +15,7 @@ namespace Swift
             cameraPos = transform.Find("Camera");
         }
 
-        public void CreateWindow(GameObject goRef)
+        public GameObject CreateWindow(GameObject goRef)
         {
             if (!windowsList.ContainsKey(goRef))
             {
@@ -33,6 +33,8 @@ namespace Swift
                 ToggleWindowState(goRef, true);
                 PlaceWindow(windowsList[goRef]);
             }
+
+            return windowsList[goRef];
         }
 
         private void PlaceWindow(GameObject window)

@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 using Valve.VR;
@@ -11,6 +12,7 @@ namespace Swift
         public SteamVR_Input_Sources controller;
         public List<ToolElement> ToolList = new List<ToolElement>();
         public Canvas ToolsMenu;
+        public TextMeshProUGUI toolName;
         public GameObject ToolUIPrefab;
         public float ToolsStartAngle = 180;
 
@@ -153,8 +155,11 @@ namespace Swift
             if(activeTool != null)
             {
                 activeTool.UpdateBehaviour();
-                if(activeTool.behaviour != null)
+                if (activeTool.behaviour != null)
+                {
                     activeTool.behaviour.ActivateTool(gameObject);
+                    toolName.text = activeTool.name;
+                }
             }
         }
 

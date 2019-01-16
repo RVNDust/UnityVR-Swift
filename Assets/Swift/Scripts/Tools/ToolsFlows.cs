@@ -6,13 +6,14 @@ namespace Swift
 {
     public class ToolsFlows : ToolBehaviour
     {
-        public GameObject flowManager;
-        public GameObject flowWindowPrefab;
+        public GameObject FlowManager;
+        public GameObject FlowWindowPrefab;
+        public GameObject FlowInformationPrefab;
 
         void Start()
         {
             StartBehaviour();
-            flowManager = transform.Find("/FlowManager").gameObject;
+            FlowManager = transform.Find("/FlowManager").gameObject;
         }
 
         void OnTriggerEnter(Collider other)
@@ -28,17 +29,20 @@ namespace Swift
         public override void ActivateTool(GameObject goRef)
         {
             StartBehaviour();
-            flowManager = transform.Find("/FlowManager").gameObject;
-            vrPlayer.GetComponent<WindowsManager>().CreateWindow(flowWindowPrefab); //Délègue la création de la fenêtre
+            FlowManager = transform.Find("/FlowManager").gameObject;
+            FlowCanvasBehaviour window = vrPlayer.GetComponent<WindowsManager>().CreateWindow(FlowWindowPrefab).GetComponent<FlowCanvasBehaviour>(); //Délègue la création de la fenêtre
             goRef.AddComponent<ToolsFlows>(); //Ajout du comportement spécifique sur le controller
-            flowManager.GetComponent<FlowManager>().ToggleDisplayFlowPath(true); //Active l'affichage des flux
-
+            FlowManager.GetComponent<FlowManager>().ToggleDisplayFlowPath(true); //Active l'affichage des flux
+            foreach (var item in FlowManager.GetComponent<FlowManager>().productFlows)
+            {
+                window.GetComponent<FlowCanvasBehaviour>().CreateProductInformations(FlowInformationPrefab);
+            }
         }
 
         public override void DesactivateTool(GameObject goRef)
         {
-            vrPlayer.GetComponent<WindowsManager>().ToggleWindowState(flowWindowPrefab, false);
-            flowManager.GetComponent<FlowManager>().ToggleDisplayFlowPath(false);
+            vrPlayer.GetComponent<WindowsManager>().ToggleWindowState(FlowWindowPrefab, false);
+            FlowManager.GetComponent<FlowManager>().ToggleDisplayFlowPath(false);
             Destroy(goRef.GetComponent<ToolsFlows>());
         }
     }

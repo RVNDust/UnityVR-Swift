@@ -11,7 +11,7 @@ public class ToolInfoBehaviour : MonoBehaviour {
 
     public void UpdateInfo(string name, Sprite sprite)
     {
-        text.text = name;
+        text.text = "";
         icon.sprite = sprite;
     }
 
