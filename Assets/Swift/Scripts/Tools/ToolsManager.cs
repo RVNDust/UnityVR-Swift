@@ -37,13 +37,13 @@ namespace Swift
 
         void Update()
         {
-            if (SteamVR_Input._default.inActions.ToolsMenu.GetLastStateDown(controller))
+            if (SteamVR_Input._default.inActions.ToolsMenu.GetStateDown(controller))
             {
                 isToolMenuActive = true;
                 ToggleToolsMenuDisplay(isToolMenuActive);
                 lastRegisteredPosition = SteamVR_Input._default.inActions.RadialMenu.GetAxis(controller);
             }
-            else if (SteamVR_Input._default.inActions.ToolsMenu.GetLastStateUp(controller))
+            else if (SteamVR_Input._default.inActions.ToolsMenu.GetStateUp(controller))
             {
                 ToolElement currentTool = CheckActiveTool();
                 if (currentTool != activeTool)
@@ -60,6 +60,9 @@ namespace Swift
             UpdateRadialMenuPosition();
         }
 
+        /// <summary>
+        /// Update position of tool selector gameobject
+        /// </summary>
         void UpdateRadialMenuPosition()
         {
             if (isToolMenuActive)
@@ -68,18 +71,34 @@ namespace Swift
                 lastRegisteredPosition = SteamVR_Input._default.inActions.RadialMenu.GetAxis(controller);
                 toolCursor.transform.Rotate(new Vector3(0, 0, 1), angleVariation, Space.Self);
             }
+
+            if(toolCursor.transform.localRotation.z > 180)
+            {
+                toolCursor.transform.Rotate(new Vector3(0, 0, 1), -360, Space.Self);
+            }
+            else if (toolCursor.transform.localRotation.z < -180)
+            {
+                toolCursor.transform.Rotate(new Vector3(0, 0, 1), 360, Space.Self);
+            }
         }
 
+        /// <summary>
+        /// Activate and deactivate displays of item menu canvas
+        /// </summary>
+        /// <param name="state">new state of the canvas</param>
         void ToggleToolsMenuDisplay(bool state)
         {
             ToolsMenu.gameObject.SetActive(state);
         }
 
+        /// <summary>
+        /// Used to create a menu item
+        /// </summary>
         void CreateToolItems()
         {
             if(ToolList.Count > 0)
             {
-                float cumulativeOffset = 0;
+                float cumulativeOffset = 180;
                 float angleOffset = 1.0f / ToolList.Count;
                 toolCursor.GetComponent<Image>().fillAmount = angleOffset;
                 foreach (ToolElement item in ToolList)
@@ -91,31 +110,44 @@ namespace Swift
                     toolItem.GetComponentInChildren<ToolInfoBehaviour>().UpdateInfo(item.name, item.icon);
                     toolItem.GetComponentInChildren<ToolInfoBehaviour>().UpdateRotation(cumulativeOffset);
 
-                    RegisterToolAngle(item, new ToolAngleActivation(ToolsStartAngle, ToolsStartAngle -= toolActivationAngle));
+                    RegisterToolAngle(item, new ToolAngleActivation(ToolsStartAngle, ToolsStartAngle -= toolActivationAngle)); //Multiplied by -1 because radial selector and item rotation are opposed
 
                     cumulativeOffset -= toolActivationAngle;
                 }
             }
         }
 
+        /// <summary>
+        /// Used to register angles between which tool will be activated
+        /// </summary>
+        /// <param name="refElement"></param>
+        /// <param name="values"></param>
         void RegisterToolAngle(ToolElement refElement, ToolAngleActivation values)
         {
             registeredTools.Add(refElement, values);
         }
 
+        /// <summary>
+        /// Check which tool is considered active
+        /// </summary>
+        /// <returns></returns>
         ToolElement CheckActiveTool()
         {
-            float cursorState = toolCursor.GetComponent<RectTransform>().localEulerAngles.z + toolActivationAngle / 2;
+            float cursorState = toolCursor.GetComponent<RectTransform>().localEulerAngles.z - toolActivationAngle / 2;
             foreach (var tool in registeredTools)
             {
                 if(tool.Value.angleStart >= cursorState && cursorState >= tool.Value.angleEnd)
                 {
+                    Debug.Log("Cursor z rotation: " + toolCursor.GetComponent<RectTransform>().localEulerAngles.z + "\ncursorState: " + cursorState + "\nangleStart: " + tool.Value.angleStart + "\nangleEnd: " + tool.Value.angleEnd);
                     return tool.Key;
                 }
             }
             return null;
         }
 
+        /// <summary>
+        /// Active the tool referenced in activeTool variable
+        /// </summary>
         void ActivateTool()
         {
             if(activeTool != null)
@@ -126,6 +158,9 @@ namespace Swift
             }
         }
 
+        /// <summary>
+        /// Deactivate the tool referenced, if there is one, in activeTool variable
+        /// </summary>
         void DesactivateTool()
         {
             if(activeTool != null)

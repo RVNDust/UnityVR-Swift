@@ -7,9 +7,10 @@ using Valve.VR;
 namespace Swift
 {
     [RequireComponent(typeof(ToolsManager))]
-    public class ToolBehaviour : NetworkBehaviour
+    public class ToolBehaviour : MonoBehaviour
     {
         protected SteamVR_Input_Sources controller;
+        protected GameObject vrPlayer;
         protected ToolsManager manager;
         protected List<GameObject> collidedObjects = new List<GameObject>();
 
@@ -25,7 +26,21 @@ namespace Swift
         protected void StartBehaviour()
         {
             manager = GetComponent<ToolsManager>();
-            controller = GetComponent<SteamVR_Behaviour_Pose>().inputSource;
+            if(GetComponent<SteamVR_Behaviour_Pose>() != null)
+                controller = GetComponent<SteamVR_Behaviour_Pose>().inputSource;
+            GetPlayerReference();
+        }
+
+        protected void GetPlayerReference()
+        {
+            GameObject[] playersEntities = GameObject.FindGameObjectsWithTag("Player");
+            foreach (var player in playersEntities)
+            {
+                if (player.GetComponent<NetworkIdentity>().isLocalPlayer)
+                {
+                    vrPlayer = player;
+                }
+            }
         }
 
         void OnTriggerEnter(Collider other)
@@ -63,7 +78,7 @@ namespace Swift
         protected void TriggerExitBehaviour(Collider other)
         {
             Rigidbody containerRb = other.GetComponentInParent<Rigidbody>();
-            if (collidedObjects.Contains(containerRb.gameObject) && containerRb != null)
+            if (containerRb != null && collidedObjects.Contains(containerRb.gameObject))
             {
                 GameObject container = containerRb.gameObject;
                 collidedObjects.Remove(container);
@@ -75,11 +90,19 @@ namespace Swift
             }
         }
 
+        /// <summary>
+        /// Redéfinir dans les enfants pour déterminer le comportement d'un outil à l'activation
+        /// </summary>
+        /// <param name="goRef">Controller sur le lequel est ajouté l'outil</param>
         public virtual void ActivateTool(GameObject goRef)
         {
             goRef.AddComponent <ToolBehaviour> ();
         }
 
+        /// <summary>
+        /// Redéfinir dans les enfants pour déterminer le comportement d'un outil à l'désactivation
+        /// </summary>
+        /// <param name="goRef">Controller sur duquel est retiré l'outil</param>
         public virtual void DesactivateTool(GameObject goRef)
         {
             Destroy(goRef.GetComponent<ToolBehaviour>());

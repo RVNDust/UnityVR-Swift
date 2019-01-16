@@ -6,6 +6,8 @@ namespace Swift
 {
     public class FlowManager : MonoBehaviour
     {
+        public GameObject arrowRef;
+
         public List<GameObject> FlowpathA = new List<GameObject>();
         public List<GameObject> FlowpathB = new List<GameObject>();
         public List<GameObject> FlowpathC = new List<GameObject>();
@@ -31,8 +33,11 @@ namespace Swift
             CreateFlowPath(FlowpathC, Product.C);
             CreateFlowPath(FlowpathD, Product.D);
             CreateFlowPath(FlowpathE, Product.E);
-            ToggleDisplayFlowPath(true);
+            ToggleDisplayFlowPath(false);
+
+            StartCoroutine(AutoRefreshFlows());
         }
+
 
         public void CreateFlowPath(List<GameObject> flowpathList, Product productType)
         {
@@ -58,6 +63,10 @@ namespace Swift
                 if (lastFlowpoint != null)
                 {
                     GameObject flowpath = new GameObject();
+                    FlowPathBehaviour fb = flowpath.AddComponent<FlowPathBehaviour>();
+                    fb.Start = lastFlowpoint;
+                    fb.End = enter;
+                    fb.UpdateSavedPositions();
                     LineRenderer lr = flowpath.AddComponent<LineRenderer>();
                     Vector3[] flowpathPositions = {enter.transform.position, lastFlowpoint.transform.position};
                     lr.SetPositions(flowpathPositions);
@@ -65,12 +74,33 @@ namespace Swift
                     lr.startWidth = 0.15f;
                     lr.endWidth = 0.15f;
 
+                    //Creating the head of the arrow
+                    Instantiate(arrowRef, flowpath.transform);
+                    arrowRef.transform.position = lastFlowpoint.transform.position;
+                    arrowRef.GetComponent<SpriteRenderer>().material = mat;
+                    fb.ArrowHead = arrowRef;
+
                     if (!productFlows.ContainsKey(productType))
                         productFlows.Add(productType, new List<GameObject>());
 
                     productFlows[productType].Add(flowpath);
                 }
                 lastFlowpoint = exit;
+            }
+        }
+
+        public void UpdateFlowPath()
+        {
+            foreach (var item in productFlows)
+            {
+                foreach (var flowpath in item.Value)
+                {
+                    FlowPathBehaviour fb = flowpath.GetComponent<FlowPathBehaviour>();
+                    fb.UpdateSavedPositions();
+                    LineRenderer lr = flowpath.GetComponent<LineRenderer>();
+                    Vector3[] flowpathPositions = { fb.StartSavedPosition, fb.EndSavedPosition};
+                    lr.SetPositions(flowpathPositions);
+                }
             }
         }
 
@@ -83,6 +113,13 @@ namespace Swift
                     flowpath.SetActive(state);
                 }
             }
+        }
+
+        IEnumerator AutoRefreshFlows()
+        {
+            UpdateFlowPath();
+            yield return new WaitForSeconds(0.1f);
+            StartCoroutine(AutoRefreshFlows());
         }
     }
 

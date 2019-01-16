@@ -9,23 +9,10 @@ namespace Swift
     public class ToolGrabObject : ToolBehaviour
     {
         List<GameObject> heldObjects =  new List<GameObject>();
-        GameObject vrPlayer;
-
-        void Awake()
-        {
-            StartBehaviour();
-        }
 
         void Start()
         {
-            GameObject[] playersEntities = GameObject.FindGameObjectsWithTag("Player");
-            foreach (var player in playersEntities)
-            {
-                if (player.GetComponent<NetworkIdentity>().isLocalPlayer)
-                {
-                    vrPlayer = player;
-                }
-            }
+            StartBehaviour();
         }
 
         void OnTriggerEnter(Collider other)
