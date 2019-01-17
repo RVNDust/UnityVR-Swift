@@ -21,7 +21,8 @@ namespace Swift
         private Vector2 lastRegisteredPosition;
         private Transform toolCursor;
         private Dictionary<ToolElement, ToolAngleActivation> registeredTools = new Dictionary<ToolElement, ToolAngleActivation>();
-        private ToolElement activeTool;
+        private Dictionary<ToolElement, Animator> animators = new Dictionary<ToolElement, Animator>();
+        private ToolElement activeTool, lastAnimated;
         private float toolActivationAngle;
 
         // Use this for initialization
@@ -30,7 +31,6 @@ namespace Swift
             controller = gameObject.GetComponent<SteamVR_Behaviour_Pose>().inputSource;
             ToolsMenu = GetComponentInChildren<Canvas>();
             toolCursor = ToolsMenu.transform.Find("RadialSelector");
-
 
             toolActivationAngle = 360 / ToolList.Count;
             CreateToolItems();
@@ -54,7 +54,6 @@ namespace Swift
                     activeTool = currentTool;
                     ActivateTool();
                 }
-
                 isToolMenuActive = false;
                 ToggleToolsMenuDisplay(isToolMenuActive);
                 lastRegisteredPosition = Vector2.zero;
@@ -81,6 +80,15 @@ namespace Swift
             else if (toolCursor.transform.localRotation.z < -180)
             {
                 toolCursor.transform.Rotate(new Vector3(0, 0, 1), 360, Space.Self);
+            }
+
+            ToolElement currentTool = CheckActiveTool();
+            if(lastAnimated != currentTool)
+            {
+                if(lastAnimated != null)
+                    animators[lastAnimated].SetBool("IsHovered", false);
+                animators[currentTool].SetBool("IsHovered", true);
+                lastAnimated = currentTool;
             }
         }
 
@@ -112,7 +120,8 @@ namespace Swift
                     toolItem.GetComponentInChildren<ToolInfoBehaviour>().UpdateInfo(item.name, item.icon);
                     toolItem.GetComponentInChildren<ToolInfoBehaviour>().UpdateRotation(cumulativeOffset);
 
-                    RegisterToolAngle(item, new ToolAngleActivation(ToolsStartAngle, ToolsStartAngle -= toolActivationAngle)); //Multiplied by -1 because radial selector and item rotation are opposed
+                    RegisterToolAngle(item, new ToolAngleActivation(ToolsStartAngle, ToolsStartAngle -= toolActivationAngle)); 
+                    animators.Add(item, toolItem.GetComponent<Animator>());
 
                     cumulativeOffset -= toolActivationAngle;
                 }
@@ -138,7 +147,7 @@ namespace Swift
             float cursorState = toolCursor.GetComponent<RectTransform>().localEulerAngles.z - toolActivationAngle / 2;
             foreach (var tool in registeredTools)
             {
-                if(tool.Value.angleStart >= cursorState && cursorState >= tool.Value.angleEnd)
+                if(tool.Value.angleStart >= cursorState && cursorState > tool.Value.angleEnd)
                 {
                     Debug.Log("Cursor z rotation: " + toolCursor.GetComponent<RectTransform>().localEulerAngles.z + "\ncursorState: " + cursorState + "\nangleStart: " + tool.Value.angleStart + "\nangleEnd: " + tool.Value.angleEnd);
                     return tool.Key;

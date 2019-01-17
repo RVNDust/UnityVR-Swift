@@ -1,0 +1,14 @@
+fileFormatVersion: 2
+guid: 10bf8325ceb783f4e8c9b447bf34b404
+MonoImporter:
+  externalObjects: {}
+  serializedVersion: 2
+  defaultReferences:
+  - markerPrefab: {fileID: 1890495292433486, guid: 7e3fec44c230981439fb84674045825a,
+      type: 2}
+  - raycastOrigin: {instanceID: 0}
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

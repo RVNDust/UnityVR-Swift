@@ -33,9 +33,16 @@ namespace Swift
             FlowCanvasBehaviour window = vrPlayer.GetComponent<WindowsManager>().CreateWindow(FlowWindowPrefab).GetComponent<FlowCanvasBehaviour>(); //Délègue la création de la fenêtre
             goRef.AddComponent<ToolsFlows>(); //Ajout du comportement spécifique sur le controller
             FlowManager.GetComponent<FlowManager>().ToggleDisplayFlowPath(true); //Active l'affichage des flux
-            foreach (var item in FlowManager.GetComponent<FlowManager>().productFlows)
-            {
-                window.GetComponent<FlowCanvasBehaviour>().CreateProductInformations(FlowInformationPrefab);
+            if(!FlowManager.GetComponent<FlowManager>().IsFilled)
+            { 
+                foreach (var item in FlowManager.GetComponent<FlowManager>().productFlows)
+                {
+                    FlowInformationsBehaviour informations = window.GetComponent<FlowCanvasBehaviour>().CreateProductInformations(FlowInformationPrefab).GetComponent<FlowInformationsBehaviour>();
+                    informations.ProductValue = item.Key;
+                    informations.DistanceValue = "100";
+                    informations.VolumeValue = "5";
+                }
+                FlowManager.GetComponent<FlowManager>().IsFilled = true;
             }
         }
 

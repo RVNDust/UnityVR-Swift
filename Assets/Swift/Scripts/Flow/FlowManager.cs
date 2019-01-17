@@ -6,6 +6,7 @@ namespace Swift
 {
     public class FlowManager : MonoBehaviour
     {
+        public bool IsFilled = false;
         public GameObject arrowRef;
 
         public List<GameObject> FlowpathA = new List<GameObject>();
@@ -15,13 +16,17 @@ namespace Swift
         public List<GameObject> FlowpathE = new List<GameObject>();
 
         public Dictionary<Product, List<GameObject>> productFlows = new Dictionary<Product, List<GameObject>>();
-        public Dictionary<Product, Color> productColor = new Dictionary<Product, Color>();
+        public Dictionary<Product, Color> productColor = new Dictionary<Product, Color>(); //TODO Change with configurable values in JSON config file
 
         public Material baseMaterial;
+
+        private GameObject flowsContainer;
 
         // Use this for initialization
         void Start()
         {
+            flowsContainer = new GameObject("FlowsContainer");
+
             productColor.Add(Product.A, Color.blue);
             productColor.Add(Product.B, Color.green);
             productColor.Add(Product.C, Color.red);
@@ -62,7 +67,8 @@ namespace Swift
                 }
                 if (lastFlowpoint != null)
                 {
-                    GameObject flowpath = new GameObject();
+                    GameObject flowpath = new GameObject("Flowpath");
+                    flowpath.transform.parent = flowsContainer.transform;
                     FlowPathBehaviour fb = flowpath.AddComponent<FlowPathBehaviour>();
                     fb.Start = lastFlowpoint;
                     fb.End = enter;

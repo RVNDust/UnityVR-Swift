@@ -8,9 +8,9 @@ namespace Swift
     {
         public GameObject container;
         
-        public void CreateProductInformations(GameObject informations)
+        public GameObject CreateProductInformations(GameObject informations)
         {
-            Instantiate(informations, container.transform);
+            return Instantiate(informations, container.transform);
         }
     }
 }

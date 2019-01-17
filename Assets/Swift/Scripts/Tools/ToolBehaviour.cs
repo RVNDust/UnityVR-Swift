@@ -54,14 +54,18 @@ namespace Swift
         /// <param name="other"></param>
         protected void TriggerEnterBehaviour(Collider other)
         {
-            GameObject container = other.GetComponentInParent<Rigidbody>().gameObject;
-            if (!collidedObjects.Contains(container) && container != null)
+            Rigidbody rbContainer = other.GetComponentInParent<Rigidbody>();
+            if(rbContainer != null)
             {
-                collidedObjects.Add(container);
-                VR_InteractableObject io = container.GetComponent<VR_InteractableObject>();
-                if(io != null)
+                GameObject container = rbContainer.gameObject;
+                if (container != null && !collidedObjects.Contains(container))
                 {
-                    io.ActivateHighlight();
+                    collidedObjects.Add(container);
+                    VR_InteractableObject io = container.GetComponent<VR_InteractableObject>();
+                    if (io != null)
+                    {
+                        io.ActivateHighlight();
+                    }
                 }
             }
         }
