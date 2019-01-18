@@ -22,7 +22,7 @@ namespace Swift
         private Transform toolCursor;
         private Dictionary<ToolElement, ToolAngleActivation> registeredTools = new Dictionary<ToolElement, ToolAngleActivation>();
         private Dictionary<ToolElement, Animator> animators = new Dictionary<ToolElement, Animator>();
-        private ToolElement activeTool, lastAnimated;
+        private ToolElement activeTool;
         private float toolActivationAngle;
 
         // Use this for initialization
@@ -73,22 +73,17 @@ namespace Swift
                 toolCursor.transform.Rotate(new Vector3(0, 0, 1), angleVariation, Space.Self);
             }
 
-            if(toolCursor.transform.localRotation.z > 180)
-            {
-                toolCursor.transform.Rotate(new Vector3(0, 0, 1), -360, Space.Self);
-            }
-            else if (toolCursor.transform.localRotation.z < -180)
-            {
-                toolCursor.transform.Rotate(new Vector3(0, 0, 1), 360, Space.Self);
-            }
-
             ToolElement currentTool = CheckActiveTool();
-            if(lastAnimated != currentTool)
+            foreach (var item in animators)
             {
-                if(lastAnimated != null)
-                    animators[lastAnimated].SetBool("IsHovered", false);
-                animators[currentTool].SetBool("IsHovered", true);
-                lastAnimated = currentTool;
+                if(item.Key != currentTool)
+                {
+                    animators[item.Key].SetBool("IsHovered", false);
+                }
+                else
+                {
+                    animators[item.Key].SetBool("IsHovered", true);
+                }
             }
         }
 
@@ -138,13 +133,27 @@ namespace Swift
             registeredTools.Add(refElement, values);
         }
 
+        void UpdateClampedAngle()
+        {
+            Quaternion currentRotation = toolCursor.localRotation;
+            if (currentRotation.z > 180)
+            {
+                toolCursor.transform.localRotation = Quaternion.Euler(currentRotation.x, currentRotation.y, currentRotation.z - 360); 
+            }
+            else if (currentRotation.z < -180)
+            {
+                toolCursor.transform.localRotation = Quaternion.Euler(currentRotation.x, currentRotation.y, currentRotation.z + 360);
+            }
+        }
+
         /// <summary>
         /// Check which tool is considered active
         /// </summary>
         /// <returns></returns>
         ToolElement CheckActiveTool()
         {
-            float cursorState = toolCursor.GetComponent<RectTransform>().localEulerAngles.z - toolActivationAngle / 2;
+            UpdateClampedAngle();
+            float cursorState = toolCursor.localRotation.z - toolActivationAngle / 2;
             foreach (var tool in registeredTools)
             {
                 if(tool.Value.angleStart >= cursorState && cursorState > tool.Value.angleEnd)

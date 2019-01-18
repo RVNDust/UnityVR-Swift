@@ -12,13 +12,23 @@ namespace Swift
 
         void Awake()
         {
+            AwakeBehaviour();
+        }
+
+        protected void AwakeBehaviour()
+        {
             window = gameObject.GetComponent<Canvas>();
             boxCollider = gameObject.GetComponent<BoxCollider>();
-            if(boxCollider == null)
+            if (boxCollider == null)
                 boxCollider = gameObject.AddComponent<BoxCollider>();
         }
 
         void Start()
+        {
+            StartBehaviour();
+        }
+
+        protected void StartBehaviour()
         {
             boxCollider.isTrigger = true;
             Vector3 boxSize = new Vector3(window.GetComponent<RectTransform>().rect.width, window.GetComponent<RectTransform>().rect.height, 1);

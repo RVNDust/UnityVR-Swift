@@ -10,23 +10,38 @@ namespace Swift
 {
     public class JsonUtils : MonoBehaviour {
 
+        public static JsonUtils Instance
+        {
+            get
+            {
+                if (instance != null)
+                    return instance;
+                else
+                    return null;
+            }
+            private set
+            {
+                if (instance == null)
+                    instance = value;
+            }
+        }
+        private static JsonUtils instance;
+
         public GameObject PopUpNotif;
-        public Button ButtonTemplate; //For the save_selection button
-        public GameObject GridForButtons; //Canvas with every buttons
+
         GameObject[] GOmachines;
         GameObject dataManager;
         GameObject saveConfig;
         GameObject loadConfig;
-        GameObject scrollView;
         Animator popupNotifAnim;
 
-        bool configLoaded = false;
+        public bool IsConfigLoaded = false;
         private void Awake()
         {
+            Instance = this;
             dataManager = GameObject.Find("DataManager");
             saveConfig = GameObject.Find("Button_SaveConfig");
             loadConfig = GameObject.Find("Button_LoadConfig");
-            scrollView = GameObject.Find("ScrollView");
             popupNotifAnim = PopUpNotif.GetComponent<Animator>();
         }
         void Start () {
@@ -34,7 +49,6 @@ namespace Swift
             {
                 GOmachines = GameObject.FindGameObjectsWithTag("Machine");
             }
-            scrollView.SetActive(false);
         }
 
         /// <summary>
@@ -84,35 +98,6 @@ namespace Swift
         }
 
         /// <summary>
-        /// Display the list of saved configuration files on the selection pannel
-        /// </summary>
-        public void LoadAndDisplayMachineConfigs()
-        {
-            //Deactivate the Load & Save buttons and activate the ScrollView
-            saveConfig.SetActive(false);
-            loadConfig.SetActive(false);
-            scrollView.SetActive(true);
-            
-            if(!configLoaded)
-            {
-                configLoaded = true;
-                //Gets all the json files in the StreamingAssets/SavedLayout/ repertory
-                string[] configFiles = Directory.GetFiles(Application.streamingAssetsPath + "/SavedLayout/", "*.json");
-                //For each config file we create a button with the name of the file
-                foreach (var filePath in configFiles)
-                {
-                    string fileName = Path.GetFileNameWithoutExtension(filePath);
-                    Button newButton = Instantiate(ButtonTemplate) as Button;
-                    //Set the parent element of the button
-                    newButton.transform.SetParent(GridForButtons.transform, false);
-                    newButton.GetComponentInChildren<TextMeshProUGUI>().text = fileName;
-                    //Puts a listener on the button to call LoadSelectedMachineConfig if the button is clicked
-                    newButton.onClick.AddListener(() => LoadSelectedMachineConfig(filePath));
-                }
-            }
-        }
-
-        /// <summary>
         /// Load the selected file and move the machines
         /// </summary>
         public void LoadSelectedMachineConfig(string filePath)
@@ -135,9 +120,6 @@ namespace Swift
             {
                 Debug.Log("Path given not found");
             }
-            saveConfig.SetActive(true);
-            loadConfig.SetActive(true);
-            scrollView.SetActive(false);
         }
 
     }

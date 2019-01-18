@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace Swift
 {
-    public class FlowCanvasBehaviour : MonoBehaviour
+    public class FlowCanvasBehaviour : CanvasBehaviour
     {
         public GameObject container;
         
