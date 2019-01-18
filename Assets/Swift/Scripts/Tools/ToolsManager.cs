@@ -149,7 +149,6 @@ namespace Swift
             {
                 if(tool.Value.angleStart >= cursorState && cursorState > tool.Value.angleEnd)
                 {
-                    Debug.Log("Cursor z rotation: " + toolCursor.GetComponent<RectTransform>().localEulerAngles.z + "\ncursorState: " + cursorState + "\nangleStart: " + tool.Value.angleStart + "\nangleEnd: " + tool.Value.angleEnd);
                     return tool.Key;
                 }
             }

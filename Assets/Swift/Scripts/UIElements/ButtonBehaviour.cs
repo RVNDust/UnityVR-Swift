@@ -7,28 +7,42 @@ using UnityEngine.UI;
 
 namespace Swift
 {
-    [RequireComponent(typeof(BoxCollider))]
-    public class ButtonBehaviour : MonoBehaviour, IPointerClickHandler
+    public class ButtonBehaviour : MonoBehaviour
     {
-        Button btn;
-        BoxCollider boxCollider;
+        protected Button btn;
+        protected BoxCollider boxCollider;
 
         void Awake()
         {
-            btn = GetComponentInChildren<Button>();
+            AwakeBehaviour();
+        }
+
+        protected void AwakeBehaviour()
+        {
+            btn = GetComponent<Button>();
             boxCollider = GetComponent<BoxCollider>();
+            if (boxCollider == null)
+                boxCollider = gameObject.AddComponent<BoxCollider>();
         }
 
         void Start()
         {
-            boxCollider.isTrigger = true;
-            //Vector3 boxSize = new Vector3(gameObject.transform.rect.size.x, gameObject.transform.rect.size.y, 0);
-            boxCollider.size = new Vector3(75, 50, 0);
+            StartBehaviour();
         }
 
-        public virtual void OnPointerClick(PointerEventData eventData)
+        protected void StartBehaviour()
         {
-            Debug.Log("I'm here");
+            boxCollider.isTrigger = true;
+            //Vector3 boxSize = new Vector3(btn.GetComponent<RectTransform>().rect.width, btn.GetComponent<RectTransform>().rect.height, -1);
+            boxCollider.size = new Vector3(100, 50, 1);
+            boxCollider.center = new Vector3(0, 0, -1);
+
+            btn.onClick.AddListener(OnClick);
+        }
+
+        protected virtual void OnClick()
+        { 
+            //TODO Déclencher changement d'état du bouton
         }
     }
 }

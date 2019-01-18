@@ -23,7 +23,6 @@ namespace Swift
         {
             raycastOrigin = transform.Find("UIRaycast");
             markerInstance = Instantiate(markerPrefab);
-            markerInstance.SetActive(false);
         }
 
         void Update()
@@ -34,17 +33,39 @@ namespace Swift
                 RaycastHit hit;
                 if (Physics.Raycast(ray, out hit, interactLimitDistance, UILayerMask))
                 {
-                    markerInstance.SetActive(true);
-                    markerInstance.transform.position = hit.transform.position;
-                    //Check if the left Mouse button is clicked
+                    CanvasBehaviour window = hit.transform.GetComponent<CanvasBehaviour>();
+                    if(window != null)
+                    {
+                        markerInstance.SetActive(true);
+                        markerInstance.transform.parent = window.transform;
+                        markerInstance.transform.localScale = new Vector3(0.2f, 0.2f, 0.2f);
+                        MarkerPositioning(hit);
+                    }
+                    MarkerPositioning(hit);
+
                     if (SteamVR_Input._default.inActions.InteractUI.GetStateDown(controller))
                     {
                         PointerEventData pointerEventData = new PointerEventData(EventSystem.current);
-                        if(hit.collider.GetComponent<IPointerClickHandler>() != null)
+                        if (hit.collider.GetComponent<IPointerClickHandler>() != null)
+                        {
                             hit.collider.GetComponent<IPointerClickHandler>().OnPointerClick(pointerEventData);
+                        }
                     }
                 }
+                else
+                {
+                    markerInstance.SetActive(false);
+                }
             }
+            else
+            {
+                markerInstance.SetActive(false);
+            }
+        }
+
+        void MarkerPositioning(RaycastHit hit)
+        {
+            markerInstance.transform.position = hit.point;
         }
     }
 }

@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
@@ -15,15 +16,8 @@ namespace Swift
         public TextMeshProUGUI Volume;
         public TextMeshProUGUI AnnualDistance;
 
-        public Dictionary<Product, Color> productColor = new Dictionary<Product, Color>(); //TODO Change with configurable values in JSON config file
-
         void Start()
         {
-            productColor.Add(Product.A, Color.blue);
-            productColor.Add(Product.B, Color.green);
-            productColor.Add(Product.C, Color.red);
-            productColor.Add(Product.D, Color.yellow);
-            productColor.Add(Product.E, Color.magenta);
         }
 
         public Product ProductValue {
@@ -32,8 +26,8 @@ namespace Swift
             }
             set {
                 productType = value;
-                //button.GetComponent<Image>().color = productColor[productType];
-                ProductText.text = productType.ToString();
+                ProductText.text = Enum.GetName(typeof(Product), productType);
+                button.GetComponent<Image>().color = FlowManager.Instance.productColor[productType];
             }
         }
 

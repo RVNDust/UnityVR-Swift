@@ -6,6 +6,22 @@ namespace Swift
 {
     public class FlowManager : MonoBehaviour
     {
+        public static FlowManager Instance {
+            get
+            {
+                if (instance != null)
+                    return instance;
+                else
+                    return null;
+            }
+            private set
+            {
+                if (instance == null)
+                    instance = value;
+            }
+        }
+        private static FlowManager instance;
+
         public bool IsFilled = false;
         public GameObject arrowRef;
 
@@ -25,6 +41,7 @@ namespace Swift
         // Use this for initialization
         void Start()
         {
+            Instance = this;
             flowsContainer = new GameObject("FlowsContainer");
 
             productColor.Add(Product.A, Color.blue);
@@ -114,10 +131,15 @@ namespace Swift
         {
             foreach (var item in productFlows)
             {
-                foreach (var flowpath in item.Value)
-                {
-                    flowpath.SetActive(state);
-                }
+                ToggleSelectedFlowPath(state, item.Key);
+            }
+        }
+
+        public void ToggleSelectedFlowPath(bool state, Product product)
+        {
+            foreach (var flowpath in productFlows[product])
+            {
+                flowpath.SetActive(state);
             }
         }
 
