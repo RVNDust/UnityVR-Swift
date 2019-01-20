@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using Swift.Data;
+using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using TMPro;
@@ -34,9 +35,9 @@ namespace Swift
         {
             configContainer.SetActive(true);
 
-            if (!JsonUtils.Instance.IsConfigLoaded)
+            if (!PlantLayoutData.Instance.IsConfigLoaded)
             {
-                JsonUtils.Instance.IsConfigLoaded = true;
+                PlantLayoutData.Instance.IsConfigLoaded = true;
                 //Gets all the json files in the StreamingAssets/SavedLayout/ repertory
                 string[] configFiles = Directory.GetFiles(Application.streamingAssetsPath + "/SavedLayout/", "*.json");
                 //For each config file we create a button with the name of the file

@@ -21,10 +21,25 @@ namespace Swift.Data
             public Quaternion MachineRotation;
         }
 
+        public static PlantLayoutData Instance { get; private set; }
         public GameObject PopUpNotif;
+        public bool IsConfigLoaded = false;
 
         GameObject[] GOmachines;
         Animator popupNotifAnim;
+
+        void Awake()
+        {
+            Instance = this;
+            popupNotifAnim = PopUpNotif.GetComponent<Animator>();
+        }
+        void Start()
+        {
+            if (GOmachines == null)
+            {
+                GOmachines = GameObject.FindGameObjectsWithTag("Machine");
+            }
+        }
 
         /// <summary>
         /// Save the machines positions & rotation in a Json File

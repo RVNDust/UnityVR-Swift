@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using Swift.Data;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -22,7 +23,7 @@ namespace Swift
 
         protected override void OnClick()
         {
-            JsonUtils.Instance.SaveMachineConfigToJson();
+            PlantLayoutData.Instance.SaveMachineConfigToJson();
         }
     }
 }

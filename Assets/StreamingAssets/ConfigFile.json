@@ -1,0 +1,71 @@
+{
+  "Flows": {
+    "Products": [
+      {
+        "Name": "A",
+        "Color": "#f96f6f",
+        "Machines": [
+          "F1",
+          "F2",
+          "T1",
+          "P1",
+          "F3",
+          "G1"
+        ],
+        "Coef":  1
+      },
+      {
+        "Name": "B",
+        "Color": "#ffb060",
+        "Machines": [
+          "G2",
+          "T3",
+          "F2",
+          "F4",
+          "P2"
+        ],
+        "Coef":  5
+      },
+      {
+        "Name": "C",
+        "Color": "#edff56",
+        "Machines": [
+          "F3",
+          "T2",
+          "G1",
+          "F4",
+          "G2"
+        ],
+        "Coef": 3
+      },
+      {
+        "Name": "D",
+        "Color": "#6dff77",
+        "Machines": [
+          "F1",
+          "T1",
+          "F3",
+          "F2",
+          "G2"
+        ],
+        "Coef":  2
+      },
+      {
+        "Name": "E",
+        "Color": "#659eff",
+        "Machines": [
+          "F3",
+          "G1",
+          "F4",
+          "P3"
+        ],
+        "Coef":  3
+      }
+    ]
+  },
+  "SavingPathes": {
+    "TargetStateFile": "/TargetState.png",
+    "Layouts": "/SavedLayouts/",
+    "Screenshots": "/Screenshots/"
+  }
+}

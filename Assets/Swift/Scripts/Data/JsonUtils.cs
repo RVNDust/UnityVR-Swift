@@ -27,19 +27,11 @@ namespace Swift.Data
         }
         private static JsonUtils instance;
 
-
-        public bool IsConfigLoaded = false;
         private void Awake()
         {
             Instance = this;
-            popupNotifAnim = PopUpNotif.GetComponent<Animator>();
         }
-        void Start () {
-	        if(GOmachines == null)
-            {
-                GOmachines = GameObject.FindGameObjectsWithTag("Machine");
-            }
-        }
+        
 
         /// <summary>
         /// Generates a file name using the following convention : Swift YYYY MM DD – HH mm ss
