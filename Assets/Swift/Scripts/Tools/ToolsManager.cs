@@ -14,11 +14,13 @@ namespace Swift
         public Canvas ToolsMenu;
         public TextMeshProUGUI toolName;
         public GameObject ToolUIPrefab;
-        public float ToolsStartAngle = 180;
+        public float ToolsStartAngle = 0;
 
 
         private bool isToolMenuActive = false;
         private Vector2 lastRegisteredPosition;
+        private float currentAngle = 0;
+        private float lastRegisteredAngle = 0;
         private Transform toolCursor;
         private Dictionary<ToolElement, ToolAngleActivation> registeredTools = new Dictionary<ToolElement, ToolAngleActivation>();
         private Dictionary<ToolElement, Animator> animators = new Dictionary<ToolElement, Animator>();
@@ -58,7 +60,8 @@ namespace Swift
                 ToggleToolsMenuDisplay(isToolMenuActive);
                 lastRegisteredPosition = Vector2.zero;
             }
-            UpdateRadialMenuPosition();
+            if(isToolMenuActive)
+                UpdateRadialMenuPosition();
         }
 
         /// <summary>
@@ -68,9 +71,10 @@ namespace Swift
         {
             if (isToolMenuActive)
             {
-                float angleVariation = Vector2.SignedAngle(lastRegisteredPosition, SteamVR_Input._default.inActions.RadialMenu.GetAxis(controller));
+                CalculateCurrentAngle();
                 lastRegisteredPosition = SteamVR_Input._default.inActions.RadialMenu.GetAxis(controller);
-                toolCursor.transform.Rotate(new Vector3(0, 0, 1), angleVariation, Space.Self);
+                float angleVariation = currentAngle - lastRegisteredAngle;
+                toolCursor.transform.Rotate(Vector3.forward, angleVariation, Space.Self);
             }
 
             ToolElement currentTool = CheckActiveTool();
@@ -82,6 +86,7 @@ namespace Swift
                 }
                 else
                 {
+                    toolName.text = item.Key.name;
                     animators[item.Key].SetBool("IsHovered", true);
                 }
             }
@@ -103,22 +108,22 @@ namespace Swift
         {
             if(ToolList.Count > 0)
             {
-                float cumulativeOffset = 180;
+                float cumulativeOffset = 0;
                 float angleOffset = 1.0f / ToolList.Count;
                 toolCursor.GetComponent<Image>().fillAmount = angleOffset;
                 foreach (ToolElement item in ToolList)
                 {
                     GameObject toolItem = Instantiate(ToolUIPrefab, ToolsMenu.transform);
                     toolItem.name = item.name;
-                    toolItem.GetComponentInChildren<Image>().fillAmount = angleOffset - 0.02f;
+                    toolItem.GetComponentInChildren<Image>().fillAmount = angleOffset - 0.01f;
                     toolItem.transform.Rotate(new Vector3(0, 0, 1), cumulativeOffset, Space.Self);
                     toolItem.GetComponentInChildren<ToolInfoBehaviour>().UpdateInfo(item.name, item.icon);
-                    toolItem.GetComponentInChildren<ToolInfoBehaviour>().UpdateRotation(cumulativeOffset);
+                    toolItem.GetComponentInChildren<ToolInfoBehaviour>().UpdateRotation(-cumulativeOffset);
 
                     RegisterToolAngle(item, new ToolAngleActivation(ToolsStartAngle, ToolsStartAngle -= toolActivationAngle)); 
                     animators.Add(item, toolItem.GetComponent<Animator>());
 
-                    cumulativeOffset -= toolActivationAngle;
+                    cumulativeOffset += toolActivationAngle;
                 }
             }
         }
@@ -133,17 +138,9 @@ namespace Swift
             registeredTools.Add(refElement, values);
         }
 
-        void UpdateClampedAngle()
+        void CalculateCurrentAngle()
         {
-            Quaternion currentRotation = toolCursor.localRotation;
-            if (currentRotation.z > 180)
-            {
-                toolCursor.transform.localRotation = Quaternion.Euler(currentRotation.x, currentRotation.y, currentRotation.z - 360); 
-            }
-            else if (currentRotation.z < -180)
-            {
-                toolCursor.transform.localRotation = Quaternion.Euler(currentRotation.x, currentRotation.y, currentRotation.z + 360);
-            }
+            currentAngle = (Mathf.Atan(lastRegisteredPosition.y / lastRegisteredPosition.x) * (180 / Mathf.PI));
         }
 
         /// <summary>
@@ -152,8 +149,7 @@ namespace Swift
         /// <returns></returns>
         ToolElement CheckActiveTool()
         {
-            UpdateClampedAngle();
-            float cursorState = toolCursor.localRotation.z - toolActivationAngle / 2;
+            float cursorState = currentAngle - toolActivationAngle / 2;
             foreach (var tool in registeredTools)
             {
                 if(tool.Value.angleStart >= cursorState && cursorState > tool.Value.angleEnd)

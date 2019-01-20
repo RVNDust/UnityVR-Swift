@@ -55,12 +55,12 @@ namespace Swift
         /// Generates a file name using the following convention : Swift YYYY MM DD – HH mm ss
         /// </summary>
         /// <returns>string fileName</returns>
-        string GenerateFileName()
+        public string GenerateFileName(string baseName = "Swift ", string extension = ".json")
         {
-            string fileName = "Swift ";
+            string fileName = baseName;
             DateTime date = DateTime.Now;
             fileName += date.ToString("yyyy MM dd - HH mm ss");
-            fileName += ".json";
+            fileName += extension;
             return fileName;
         }
 
