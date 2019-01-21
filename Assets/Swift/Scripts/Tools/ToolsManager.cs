@@ -18,6 +18,7 @@ namespace Swift
 
 
         private bool isToolMenuActive = false;
+        private bool isChangingTool = false;
         private Vector2 lastRegisteredPosition;
         private float currentAngle = 0;
         private float lastRegisteredAngle = 0;
@@ -41,6 +42,11 @@ namespace Swift
 
         void Update()
         {
+            if (SteamVR_Input._default.inActions.Touchpad.GetStateDown(controller))
+                isChangingTool = true;
+            else if (SteamVR_Input._default.inActions.Touchpad.GetStateUp(controller))
+                isChangingTool = false;
+
             if (SteamVR_Input._default.inActions.ToolsMenu.GetStateDown(controller))
             {
                 isToolMenuActive = true;
@@ -50,7 +56,7 @@ namespace Swift
             else if (SteamVR_Input._default.inActions.ToolsMenu.GetStateUp(controller))
             {
                 ToolElement currentTool = CheckActiveTool();
-                if (currentTool != activeTool)
+                if (currentTool != null)
                 {
                     DesactivateTool();
                     activeTool = currentTool;
@@ -69,12 +75,11 @@ namespace Swift
         /// </summary>
         void UpdateRadialMenuPosition()
         {
-            if (isToolMenuActive)
+            if (isToolMenuActive && isChangingTool)
             {
-                CalculateCurrentAngle();
                 lastRegisteredPosition = SteamVR_Input._default.inActions.RadialMenu.GetAxis(controller);
-                float angleVariation = currentAngle - lastRegisteredAngle;
-                toolCursor.transform.Rotate(Vector3.forward, angleVariation, Space.Self);
+                CalculateCurrentAngle();
+                toolCursor.transform.localRotation = Quaternion.Euler(0,0, currentAngle - toolActivationAngle / 2);
             }
 
             ToolElement currentTool = CheckActiveTool();
@@ -108,7 +113,6 @@ namespace Swift
         {
             if(ToolList.Count > 0)
             {
-                float cumulativeOffset = 0;
                 float angleOffset = 1.0f / ToolList.Count;
                 toolCursor.GetComponent<Image>().fillAmount = angleOffset;
                 foreach (ToolElement item in ToolList)
@@ -116,14 +120,12 @@ namespace Swift
                     GameObject toolItem = Instantiate(ToolUIPrefab, ToolsMenu.transform);
                     toolItem.name = item.name;
                     toolItem.GetComponentInChildren<Image>().fillAmount = angleOffset - 0.01f;
-                    toolItem.transform.Rotate(new Vector3(0, 0, 1), cumulativeOffset, Space.Self);
+                    toolItem.transform.Rotate(new Vector3(0, 0, 1), ToolsStartAngle, Space.Self);
                     toolItem.GetComponentInChildren<ToolInfoBehaviour>().UpdateInfo(item.name, item.icon);
-                    toolItem.GetComponentInChildren<ToolInfoBehaviour>().UpdateRotation(-cumulativeOffset);
+                    toolItem.GetComponentInChildren<ToolInfoBehaviour>().UpdateRotation(-ToolsStartAngle);
 
-                    RegisterToolAngle(item, new ToolAngleActivation(ToolsStartAngle, ToolsStartAngle -= toolActivationAngle)); 
+                    RegisterToolAngle(item, new ToolAngleActivation(ToolsStartAngle, ToolsStartAngle += toolActivationAngle)); 
                     animators.Add(item, toolItem.GetComponent<Animator>());
-
-                    cumulativeOffset += toolActivationAngle;
                 }
             }
         }
@@ -140,7 +142,15 @@ namespace Swift
 
         void CalculateCurrentAngle()
         {
-            currentAngle = (Mathf.Atan(lastRegisteredPosition.y / lastRegisteredPosition.x) * (180 / Mathf.PI));
+            currentAngle = ((Mathf.Atan2(lastRegisteredPosition.x, lastRegisteredPosition.y) / Mathf.PI) * 180f);
+            if(currentAngle < 0)
+            {
+                currentAngle += 360f;
+            }
+            else if(currentAngle > 360f)
+            {
+                currentAngle -= 360f;
+            }
         }
 
         /// <summary>
@@ -149,10 +159,10 @@ namespace Swift
         /// <returns></returns>
         ToolElement CheckActiveTool()
         {
-            float cursorState = currentAngle - toolActivationAngle / 2;
+            float cursorState = currentAngle; //- toolActivationAngle / 2;
             foreach (var tool in registeredTools)
             {
-                if(tool.Value.angleStart >= cursorState && cursorState > tool.Value.angleEnd)
+                if(tool.Value.angleStart <= cursorState && cursorState < tool.Value.angleEnd)
                 {
                     return tool.Key;
                 }

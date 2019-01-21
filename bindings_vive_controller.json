@@ -215,6 +215,9 @@
                   },
                   "position" : {
                      "output" : "/actions/default/in/radialmenu"
+                  },
+                  "touch" : {
+                     "output" : "/actions/default/in/touchpad"
                   }
                },
                "mode" : "trackpad",
@@ -227,6 +230,9 @@
                   },
                   "position" : {
                      "output" : "/actions/default/in/radialmenu"
+                  },
+                  "touch" : {
+                     "output" : "/actions/default/in/touchpad"
                   }
                },
                "mode" : "trackpad",

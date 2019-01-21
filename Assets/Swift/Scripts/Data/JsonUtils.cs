@@ -37,7 +37,7 @@ namespace Swift.Data
         /// Generates a file name using the following convention : Swift YYYY MM DD – HH mm ss
         /// </summary>
         /// <returns>string fileName</returns>
-        public string GenerateFileName(string baseName = "Swift ", string extension = ".json")
+        public string GenerateFileName(string baseName = "Swift - ", string extension = ".json")
         {
             string fileName = baseName;
             DateTime date = DateTime.Now;

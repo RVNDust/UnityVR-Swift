@@ -23,7 +23,7 @@ namespace Swift.Data
         }
 
         [Serializable]
-        public class SavingPathes
+        public class SavingPaths
         {
             public string TargetStateFile;
             public string Layouts;
@@ -34,15 +34,16 @@ namespace Swift.Data
         public class RootObject
         {
             public Flows Flows;
-            public SavingPathes SavingPathes;
+            public SavingPaths SavingPaths;
         }
 
         public static ConfigData Instance { get; private set; }
-        string configFilePath = Application.dataPath + "/ConfigFile.json";
+        string configFilePath;
 
         void Awake()
         {
             Instance = this;
+            configFilePath = Application.streamingAssetsPath + "/ConfigFile.json";
         }
 
         public object LoadConfigData(ConfigElement selectedContent)
@@ -57,8 +58,8 @@ namespace Swift.Data
                         return config;
                     case ConfigElement.Flows:
                         return config.Flows;
-                    case ConfigElement.Pathes:
-                        return config.SavingPathes;
+                    case ConfigElement.Paths:
+                        return config.SavingPaths;
                     default:
                         return null;
                 }
@@ -71,6 +72,6 @@ namespace Swift.Data
     {
         All,
         Flows,
-        Pathes
+        Paths
     }
 }

@@ -8,18 +8,24 @@ namespace Swift
 {
     public class ScreenshotManager : MonoBehaviour
     {
-
-        public static ScreenshotManager Instance { get; private set; }
-
         Camera currentView;
         bool IsTakingScreenshot = false;
+        string screenFolderPath;
+        int captureWidth = 400, captureHeight = 400;
 
-        void Awake()
+        void Start()
         {
-            Instance = this;
-        }
+            ConfigData.SavingPaths savingPaths = ConfigData.Instance.LoadConfigData(ConfigElement.Paths) as ConfigData.SavingPaths;
+            screenFolderPath = Application.streamingAssetsPath + savingPaths.Screenshots;
 
-        void OnPostRenderer()
+            if (!Directory.Exists(screenFolderPath))
+            {
+                Directory.CreateDirectory(screenFolderPath);
+            }
+        }
+        
+
+        void OnPostRender()
         {
             if (IsTakingScreenshot)
             {
@@ -33,18 +39,18 @@ namespace Swift
                 string fileName = JsonUtils.Instance.GenerateFileName("Swift ", ".png");
 
                 byte[] byteArray = renderResult.EncodeToPNG();
-                File.WriteAllBytes(Application.dataPath + "/Screenshots/" + fileName, byteArray);
+                File.WriteAllBytes(screenFolderPath + fileName, byteArray);
 
                 RenderTexture.ReleaseTemporary(renderTexture);
                 currentView.targetTexture = null;
-                currentView = null;
+                //currentView = null;
             }
 
         }
 
-        public void TakeScreenshot(Camera view, int width, int height)
+        public void TakeScreenshot(Camera view)
         {
-            view.targetTexture = RenderTexture.GetTemporary(width, height, 16);
+            view.targetTexture = RenderTexture.GetTemporary(captureWidth, captureHeight, 16);
             currentView = view;
             IsTakingScreenshot = true;
         }

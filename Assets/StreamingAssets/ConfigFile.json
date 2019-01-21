@@ -63,7 +63,7 @@
       }
     ]
   },
-  "SavingPathes": {
+  "SavingPaths": {
     "TargetStateFile": "/TargetState.png",
     "Layouts": "/SavedLayouts/",
     "Screenshots": "/Screenshots/"

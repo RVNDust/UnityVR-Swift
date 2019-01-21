@@ -24,7 +24,7 @@ namespace Swift
 
         protected override void OnClick()
         {
-            btn.gameObject.SetActive(false);
+            //btn.interactable = false;
             window.GetComponent<SaveLoadCanvasBehaviour>().LoadAndDisplayMachineConfigs();
         }
     }

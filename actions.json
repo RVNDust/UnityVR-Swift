@@ -45,6 +45,10 @@
       "type": "boolean"
     },
     {
+      "name": "/actions/default/in/Touchpad",
+      "type": "boolean"
+    },
+    {
       "name": "/actions/default/out/Haptic",
       "type": "vibration"
     },

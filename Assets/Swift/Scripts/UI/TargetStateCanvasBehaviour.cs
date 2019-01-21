@@ -8,10 +8,10 @@ namespace Swift
 {
     public class TargetStateCanvasBehaviour : CanvasBehaviour
     {
-        string folderPath = Application.dataPath;
-        string fileName = "/configFile.json";
+        string folderPath;
+        string fileName;
 
-        Image img;
+        public Image img;
 
         // Use this for initialization
         void Start()
@@ -23,7 +23,14 @@ namespace Swift
         void Awake()
         {
             AwakeBehaviour();
-            img = GetComponentInChildren<Image>();
+            ConfigData.SavingPaths paths = ConfigData.Instance.LoadConfigData(ConfigElement.Paths) as ConfigData.SavingPaths;
+            fileName = Application.streamingAssetsPath + paths.TargetStateFile;
+            WWW www = new WWW(fileName);
+            while(!www.isDone)
+            {
+            }
+
+            img.overrideSprite = Sprite.Create(www.texture, new Rect(0, 0, www.texture.width, www.texture.height), new Vector2(0.5f,0.5f));
         }
 
         void Update()

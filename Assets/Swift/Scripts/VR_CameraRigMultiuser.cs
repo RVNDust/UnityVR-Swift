@@ -107,13 +107,32 @@ namespace Swift
             Debug.Log(go.name);
             NetworkIdentity ni = go.GetComponent<NetworkIdentity>();
             ni.AssignClientAuthority(base.connectionToClient);
+            StartCoroutine(AddDelay(.1f));
         }
 
         [Command]
         public void CmdLoseControl(GameObject go)
         {
+            StartCoroutine(AddDelay(.1f));
             NetworkIdentity ni = go.GetComponent<NetworkIdentity>();
             ni.RemoveClientAuthority(base.connectionToClient);
+        }
+
+        [Command]
+        public void CmdLoadLayoutConfiguration(string jsonContent)
+        {
+            Swift.Data.PlantLayoutData.RootObject machinesJson = JsonUtility.FromJson<Swift.Data.PlantLayoutData.RootObject>(jsonContent);
+            foreach (var machine in machinesJson.machinesList)
+            {
+                GameObject tempMachine = GameObject.Find(machine.MachineName);
+                tempMachine.transform.position = machine.MachinePosition;
+                tempMachine.transform.rotation = machine.MachineRotation;
+            }
+        }
+
+        IEnumerator AddDelay(float time)
+        {
+            yield return new WaitForSeconds(time);
         }
         #endregion
     }

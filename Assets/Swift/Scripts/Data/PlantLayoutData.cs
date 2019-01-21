@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Networking;
 
 namespace Swift.Data
 {
@@ -23,7 +24,8 @@ namespace Swift.Data
 
         public static PlantLayoutData Instance { get; private set; }
         public GameObject PopUpNotif;
-        public bool IsConfigLoaded = false;
+        public GameObject vrPlayer;
+        [HideInInspector] public bool IsConfigLoaded = false;
 
         GameObject[] GOmachines;
         Animator popupNotifAnim;
@@ -31,7 +33,7 @@ namespace Swift.Data
         void Awake()
         {
             Instance = this;
-            popupNotifAnim = PopUpNotif.GetComponent<Animator>();
+            //popupNotifAnim = PopUpNotif.GetComponent<Animator>();
         }
         void Start()
         {
@@ -39,6 +41,20 @@ namespace Swift.Data
             {
                 GOmachines = GameObject.FindGameObjectsWithTag("Machine");
             }
+        }
+        
+        private GameObject GetPlayerReference()
+        {
+            GameObject[] playersEntities = GameObject.FindGameObjectsWithTag("Player");
+            foreach (var player in playersEntities)
+            {
+                if (player.GetComponent<NetworkIdentity>().isLocalPlayer)
+                {
+                    vrPlayer = player;
+                    return player;
+                }
+            }
+            return null;
         }
 
         /// <summary>
@@ -58,9 +74,9 @@ namespace Swift.Data
 
                 machinesJson.machinesList.Add(currentMachine);
             }
-            JsonUtils.Instance.SaveToJson(Application.dataPath + "/SavedLayouts/", JsonUtils.Instance.GenerateFileName(), machinesJson);
-            popupNotifAnim.SetBool("active", true);
-            StartCoroutine(addDelay(2f));
+            JsonUtils.Instance.SaveToJson(Application.streamingAssetsPath + "/SavedLayouts/", JsonUtils.Instance.GenerateFileName(), machinesJson);
+            //popupNotifAnim.SetBool("active", true);
+            //StartCoroutine(addDelay(2f));
         }
 
         /// <summary>
@@ -72,14 +88,17 @@ namespace Swift.Data
             if (machinesConfig != "")
             {
                 //Pass the json to JsonUtility and create a RootObject (the list of every machines in the savefile)
-                RootObject machinesJson = JsonUtility.FromJson<RootObject>(machinesConfig);
+                GameObject userMe = GetPlayerReference();
+                userMe.GetComponent<VR_CameraRigMultiuser>().CmdLoadLayoutConfiguration(machinesConfig);
                 //For each machine saved we change the Pos/Rot values of the corresponding GameObject
-                foreach (var machine in machinesJson.machinesList)
-                {
-                    var tempMachine = GameObject.Find(machine.MachineName);
-                    tempMachine.transform.position = machine.MachinePosition;
-                    tempMachine.transform.rotation = machine.MachineRotation;
-                }
+                //foreach (var machine in machinesJson.machinesList)
+                //{
+                //    GameObject tempMachine = GameObject.Find(machine.MachineName);
+                //    userMe.GetComponent<VR_CameraRigMultiuser>().CmdTakeControl(tempMachine);
+                //    tempMachine.transform.position = machine.MachinePosition;
+                //    tempMachine.transform.rotation = machine.MachineRotation;
+                //    userMe.GetComponent<VR_CameraRigMultiuser>().CmdLoseControl(tempMachine);
+                //}
             }
             else
             {
@@ -89,8 +108,8 @@ namespace Swift.Data
 
         IEnumerator addDelay(float delay)
         {
-            yield return new WaitForSeconds(2f);
-            popupNotifAnim.SetBool("active", false);
+            yield return new WaitForSeconds(delay);
+            //popupNotifAnim.SetBool("active", false);
         }
     }
 }
