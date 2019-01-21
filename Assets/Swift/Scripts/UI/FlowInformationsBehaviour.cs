@@ -10,7 +10,6 @@ namespace Swift
     public class FlowInformationsBehaviour : MonoBehaviour
     {
         public Button button;
-        public Product productType;
         public TextMeshProUGUI ProductText;
         public TextMeshProUGUI Distance;
         public TextMeshProUGUI Volume;
@@ -20,14 +19,13 @@ namespace Swift
         {
         }
 
-        public Product ProductValue {
+        public string ProductValue {
             get {
-                return productType;
+                return ProductText.text;
             }
             set {
-                productType = value;
-                ProductText.text = Enum.GetName(typeof(Product), productType);
-                button.GetComponent<Image>().color = FlowManager.Instance.productColor[productType];
+                ProductText.text = value;
+                button.GetComponent<Image>().color = FlowManager.Instance.productColor[value];
             }
         }
 

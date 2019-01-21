@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using Swift.Data;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -31,8 +32,8 @@ namespace Swift
         public List<GameObject> FlowpathD = new List<GameObject>();
         public List<GameObject> FlowpathE = new List<GameObject>();
 
-        public Dictionary<Product, List<GameObject>> productFlows = new Dictionary<Product, List<GameObject>>();
-        public Dictionary<Product, Color> productColor = new Dictionary<Product, Color>(); //TODO Change with configurable values in JSON config file
+        public Dictionary<string, List<GameObject>> productFlows = new Dictionary<string, List<GameObject>>();
+        public Dictionary<string, Color> productColor = new Dictionary<string, Color>(); //TODO Change with configurable values in JSON config file
 
         public Material baseMaterial;
 
@@ -43,25 +44,37 @@ namespace Swift
         {
             Instance = this;
             flowsContainer = new GameObject("FlowsContainer");
+            StartCoroutine(Delays());
+        }
 
-            productColor.Add(Product.A, Color.blue);
-            productColor.Add(Product.B, Color.green);
-            productColor.Add(Product.C, Color.red);
-            productColor.Add(Product.D, Color.yellow);
-            productColor.Add(Product.E, Color.magenta);
-            
-            CreateFlowPath(FlowpathA, Product.A);
-            CreateFlowPath(FlowpathB, Product.B);
-            CreateFlowPath(FlowpathC, Product.C);
-            CreateFlowPath(FlowpathD, Product.D);
-            CreateFlowPath(FlowpathE, Product.E);
-            ToggleDisplayFlowPath(false);
+        private void LoadFlowsData()
+        {
+            ConfigData.Flows flowsData = ConfigData.Instance.LoadConfigData(ConfigElement.Flows) as ConfigData.Flows;
+            foreach (var product in flowsData.Products)
+            {
+                //Handling color of each product
+                Color color;
+                ColorUtility.TryParseHtmlString(product.Color, out color);
+                productColor.Add(product.Name, color);
+
+                //Handling connexion with the different machines
+                List<GameObject> tempFlowpath = new List<GameObject>();
+                foreach (var machine in product.Machines)
+                {
+                    Debug.Log(machine);
+                    GameObject machineGo = GameObject.Find(machine);
+                    tempFlowpath.Add(machineGo);
+                }
+                Debug.Log(tempFlowpath);
+                CreateFlowPath(tempFlowpath, product.Name);
+            }
+
+            ToggleDisplayFlowPath(true);
 
             StartCoroutine(AutoRefreshFlows());
         }
 
-
-        public void CreateFlowPath(List<GameObject> flowpathList, Product productType)
+        public void CreateFlowPath(List<GameObject> flowpathList, string productType)
         {
             FlowPoint lastFlowpoint = null;
             Color flowColor = productColor[productType];
@@ -135,7 +148,7 @@ namespace Swift
             }
         }
 
-        public void ToggleSelectedFlowPath(bool state, Product product)
+        public void ToggleSelectedFlowPath(bool state, string product)
         {
             foreach (var flowpath in productFlows[product])
             {
@@ -149,14 +162,11 @@ namespace Swift
             yield return new WaitForSeconds(0.1f);
             StartCoroutine(AutoRefreshFlows());
         }
-    }
 
-    public enum Product
-    {
-        A,
-        B,
-        C,
-        D,
-        E
+        IEnumerator Delays()
+        {
+            yield return new WaitForSeconds(5.0f);
+            LoadFlowsData();
+        }
     }
 }
