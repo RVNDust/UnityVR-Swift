@@ -13,17 +13,9 @@ namespace Swift
         public Vector3 SpawnPoint = Vector3.zero;
         private short customPlayerControllerId = 1;
 
-        // Use this for initialization
-        void Start()
-        {
-
-        }
-
-        // Update is called once per frame
-        void Update()
-        {
-
-        }
+        public delegate void OnServerPlayerEvent(GameObject playerRef);
+        public event OnServerPlayerEvent onServerAddPlayerEvent;
+        public event OnServerPlayerEvent onServerRemovePlayerEvent;
 
         /// <summary>
         /// Called from the client to ask to be added on the shared scene,
@@ -74,9 +66,23 @@ namespace Swift
                     prefabToSpawn = isVRDeviceActive ? PlayerVR : PlayerThirdPerson;
                     break;
             }
-            var player = (GameObject)GameObject.Instantiate(prefabToSpawn, SpawnPoint, Quaternion.identity);
+            var player = (GameObject)Instantiate(prefabToSpawn, SpawnPoint, Quaternion.identity);
             if (autoCreatePlayer) NetworkServer.AddPlayerForConnection(conn, player, playerControllerId);
             Debug.Log("Client has requested to get his player added to the game " + player);
+
+            if (onServerAddPlayerEvent != null)
+            {
+                Debug.Log("Event not null");
+                onServerAddPlayerEvent(player);
+            }
+        }
+
+        public override void OnServerRemovePlayer(NetworkConnection conn, PlayerController player)
+        {
+            base.OnServerRemovePlayer(conn, player);
+
+            if (onServerRemovePlayerEvent != null)
+                onServerRemovePlayerEvent(player.gameObject);
         }
     }
 }

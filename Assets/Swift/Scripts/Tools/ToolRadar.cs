@@ -27,13 +27,12 @@ namespace Swift
         public override void ActivateTool(GameObject goRef)
         {
             StartBehaviour();
-            //SaveLoadCanvasBehaviour window = vrPlayer.GetComponent<WindowsManager>().CreateWindow(SaveLoadWindowPrefab).GetComponent<SaveLoadCanvasBehaviour>(); //Délègue la création de la fenêtre
-            //goRef.AddComponent<ToolScreenshot>().screenshotManager = cam.GetComponent<ScreenshotManager>(); //Ajout du comportement spécifique sur le controller
+            RadarCanvasBehaviour window = vrPlayer.GetComponent<WindowsManager>().CreateWindow(RadarWindowPrefab).GetComponent<RadarCanvasBehaviour>(); //Délègue la création de la fenêtre
         }
 
         public override void DesactivateTool(GameObject goRef)
         {
-            Destroy(goRef.GetComponent<ToolScreenshot>());
+            vrPlayer.GetComponent<WindowsManager>().ToggleWindowState(RadarWindowPrefab, false);
         }
     }
 }
