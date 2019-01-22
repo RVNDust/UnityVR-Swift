@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Networking;
 
 namespace Swift
 {
@@ -22,6 +23,7 @@ namespace Swift
             }
         }
         private static FlowManager instance;
+        public NetworkManager networkManager;
 
         public bool IsFilled = false;
         public GameObject arrowRef;
@@ -49,28 +51,30 @@ namespace Swift
 
         private void LoadFlowsData()
         {
-            ConfigData.Flows flowsData = ConfigData.Instance.LoadConfigData(ConfigElement.Flows) as ConfigData.Flows;
-            foreach (var product in flowsData.Products)
+            if(networkManager.IsClientConnected())
             {
-                //Handling color of each product
-                Color color;
-                ColorUtility.TryParseHtmlString(product.Color, out color);
-                productColor.Add(product.Name, color);
-
-                //Handling connexion with the different machines
-                List<GameObject> tempFlowpath = new List<GameObject>();
-                foreach (var machine in product.Machines)
+                ConfigData.Flows flowsData = ConfigData.Instance.LoadConfigData(ConfigElement.Flows) as ConfigData.Flows;
+                foreach (var product in flowsData.Products)
                 {
-                    Debug.Log(machine);
-                    GameObject machineGo = GameObject.Find(machine);
-                    tempFlowpath.Add(machineGo);
+                    //Handling color of each product
+                    Color color;
+                    ColorUtility.TryParseHtmlString(product.Color, out color);
+                    productColor.Add(product.Name, color);
+
+                    //Handling connexion with the different machines
+                    List<GameObject> tempFlowpath = new List<GameObject>();
+                    foreach (var machine in product.Machines)
+                    {
+                        Debug.Log(machine);
+                        GameObject machineGo = GameObject.Find(machine);
+                        tempFlowpath.Add(machineGo);
+                    }
+                    Debug.Log(tempFlowpath);
+                    CreateFlowPath(tempFlowpath, product.Name);
                 }
-                Debug.Log(tempFlowpath);
-                CreateFlowPath(tempFlowpath, product.Name);
+
+                ToggleDisplayFlowPath(true);
             }
-
-            ToggleDisplayFlowPath(true);
-
             StartCoroutine(AutoRefreshFlows());
         }
 
