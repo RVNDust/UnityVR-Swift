@@ -6,7 +6,6 @@ using Valve.VR;
 
 namespace Swift
 {
-    [RequireComponent(typeof(ToolsManager))]
     public class ToolBehaviour : MonoBehaviour
     {
         protected SteamVR_Input_Sources controller;
