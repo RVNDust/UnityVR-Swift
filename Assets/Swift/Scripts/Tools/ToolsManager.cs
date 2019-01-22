@@ -15,7 +15,7 @@ namespace Swift
         public TextMeshProUGUI toolName;
         public GameObject ToolUIPrefab;
         public float ToolsStartAngle = 0;
-
+        public SteamVR_Action_Vibration haptics;
 
         private bool isToolMenuActive = false;
         private bool isChangingTool = false;
@@ -59,6 +59,8 @@ namespace Swift
                 if (currentTool != null)
                 {
                     DesactivateTool();
+                    if (activeTool != currentTool)
+                        haptics.Execute(0, 0.5f, 75, 0.5f, controller);
                     activeTool = currentTool;
                     ActivateTool();
                 }

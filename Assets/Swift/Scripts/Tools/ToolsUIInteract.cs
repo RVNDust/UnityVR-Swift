@@ -12,6 +12,8 @@ namespace Swift
 {
     public class ToolsUIInteract : ToolBehaviour
     {
+        public SteamVR_Action_Vibration haptics;
+
         public LayerMask UILayerMask;
         public float interactLimitDistance = 5.0f;
         public GameObject markerPrefab;
@@ -45,6 +47,7 @@ namespace Swift
 
                     if (SteamVR_Input._default.inActions.InteractUI.GetStateDown(controller))
                     {
+                        haptics.Execute(0, .2f, 75, .5f, controller);
                         PointerEventData pointerEventData = new PointerEventData(EventSystem.current);
                         if (hit.collider.GetComponent<IPointerClickHandler>() != null)
                         {
