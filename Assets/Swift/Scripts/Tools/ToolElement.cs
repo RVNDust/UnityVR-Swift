@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
 
-namespace Swift
+namespace Swift.Tools
 {
     [CreateAssetMenu(fileName = "ToolElement", menuName = "Swift/Tool/New Tool", order = 1)]
     public class ToolElement : ScriptableObject

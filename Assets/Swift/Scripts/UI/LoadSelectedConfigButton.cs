@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace Swift
+namespace Swift.UI
 {
     public class LoadSelectedConfigButton : ButtonBehaviour
     {
@@ -21,9 +21,10 @@ namespace Swift
             AwakeBehaviour();
         }
 
-        protected override void OnClick()
+        public override void OnClick()
         {
             base.OnClick();
+            Debug.Log("LoadConfig");
             PlantLayoutData.Instance.LoadSelectedMachineConfig(fileName);
         }
     }

@@ -1,9 +1,10 @@
-﻿using System.Collections;
+﻿using Swift.UI;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using Valve.VR;
 
-namespace Swift
+namespace Swift.Tools
 {
     public class ToolRadar : ToolBehaviour {
 

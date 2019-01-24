@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEngine.Networking;
 using Valve.VR;
 
-namespace Swift
+namespace Swift.Tools
 {
 	public class ToolTeleport : ToolBehaviour {
         ControllerPointer cp;

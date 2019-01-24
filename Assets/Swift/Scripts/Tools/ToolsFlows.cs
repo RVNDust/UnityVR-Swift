@@ -1,8 +1,10 @@
-﻿using System.Collections;
+﻿using Swift.Flow;
+using Swift.UI;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace Swift
+namespace Swift.Tools
 {
     public class ToolsFlows : ToolBehaviour
     {
@@ -38,6 +40,9 @@ namespace Swift
                     informations.ProductValue = item.Key;
                     informations.DistanceValue = "100";
                     informations.VolumeValue = "5";
+                    FlowpathActivationButton btn = informations.button.GetComponent<FlowpathActivationButton>();
+                    btn.baseColor = FlowManager.Instance.productColor[item.Key];
+                    btn.OnClick();
                 }
                 FlowManager.Instance.IsFilled = true;
             }

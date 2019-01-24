@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using Valve.VR;
 
-namespace Swift
+namespace Swift.Interactions
 {
     [RequireComponent(typeof(VR_InteractableObject))]
     public class VR_Grabbable : MonoBehaviour
@@ -24,6 +24,9 @@ namespace Swift
         [Range(1, 10)] public float shrinkFactor = 10;
         public bool IsGrabbed;
 
+        public GameObject boundingBoxPrefab;
+        private GameObject boundingBox;
+
         void Awake()
         {
             interactable = GetComponent<VR_InteractableObject>();
@@ -39,12 +42,35 @@ namespace Swift
         {
             if(IsGrabbed)
             {
-                Debug.Log("Shrink");
                 gameObject.transform.localScale = Vector3.SmoothDamp(gameObject.transform.localScale, shrinkScale, ref shrinkVelocity, 0.5f);
+
+                if(boundingBoxPrefab != null && boundingBox == null)
+                {
+                    boundingBox = Instantiate(boundingBoxPrefab);
+                    Vector3 meshSize = CalculateLocalBounds().extents;
+                    Vector3 boxSize = new Vector3(meshSize.x, 1, meshSize.z);
+                    boundingBox.transform.localScale = boxSize;
+                }
+
+                if(boundingBox != null)
+                {
+                    LayerMask layerMask = LayerMask.GetMask("Ground");
+                    RaycastHit hit;
+                    if(Physics.Raycast(transform.position, Vector3.down, out hit, Mathf.Infinity, layerMask))
+                    {
+                        boundingBox.transform.position = hit.point + new Vector3(0, 0.1f, 0);
+                        boundingBox.transform.rotation = Quaternion.Euler(boundingBox.transform.rotation.eulerAngles.x,
+                                                                          gameObject.transform.rotation.eulerAngles.y,
+                                                                          boundingBox.transform.rotation.eulerAngles.z);
+                    }
+                }
             }
             else
             {
                 gameObject.transform.localScale = Vector3.SmoothDamp(gameObject.transform.localScale, originalScale, ref shrinkVelocity, 0.5f);
+
+                if (boundingBox != null)
+                    Destroy(boundingBox);
             }
         }
 
@@ -64,6 +90,7 @@ namespace Swift
                 item.isTrigger = false;
             }
             transform.SetParent(controller.gameObject.transform);
+            interactable.originalLocalPosition = interactable.transform.localPosition;
 
             controllerReference = controller;
 
@@ -93,6 +120,23 @@ namespace Swift
             {
                 onUngrabEvent();
             }
+        }
+
+        /// <summary>
+        /// Method to calculate localBounds of an object (found on internet)
+        /// </summary>
+        /// <returns></returns>
+        Bounds CalculateLocalBounds()
+        {
+            Quaternion currentRotation = this.transform.rotation;
+            this.transform.rotation = Quaternion.Euler(0f,0f,0f);
+            Bounds bounds = new Bounds(this.transform.position, Vector3.zero);
+            foreach (Renderer r in GetComponentsInChildren<Renderer>())
+            {
+                bounds.Encapsulate(r.bounds);
+            }
+            Debug.Log(bounds);
+            return bounds;
         }
     }
 }

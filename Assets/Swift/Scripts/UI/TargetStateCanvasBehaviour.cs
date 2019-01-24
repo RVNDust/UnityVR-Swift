@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace Swift
+namespace Swift.UI
 {
     public class TargetStateCanvasBehaviour : CanvasBehaviour
     {

@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Networking;
 
-namespace Swift
+namespace Swift.Flow
 {
     public class FlowManager : MonoBehaviour
     {
@@ -29,18 +29,13 @@ namespace Swift
         public bool IsDataLoaded = false;
         public GameObject arrowRef;
 
-        public List<GameObject> FlowpathA = new List<GameObject>();
-        public List<GameObject> FlowpathB = new List<GameObject>();
-        public List<GameObject> FlowpathC = new List<GameObject>();
-        public List<GameObject> FlowpathD = new List<GameObject>();
-        public List<GameObject> FlowpathE = new List<GameObject>();
-
         public Dictionary<string, List<GameObject>> productFlows = new Dictionary<string, List<GameObject>>();
         public Dictionary<string, Color> productColor = new Dictionary<string, Color>(); //TODO Change with configurable values in JSON config file
 
         public Material baseMaterial;
 
         private GameObject flowsContainer;
+        private GameObject localPlayer;
 
         // Use this for initialization
         void Start()
@@ -53,7 +48,7 @@ namespace Swift
 
         private void LoadFlowsData()
         {
-            if(networkManager.IsClientConnected())
+            if(localPlayer != null)
             {
                 IsDataLoaded = true;
                 ConfigData.Flows flowsData = ConfigData.Instance.LoadConfigData(ConfigElement.Flows) as ConfigData.Flows;
@@ -68,7 +63,6 @@ namespace Swift
                     List<GameObject> tempFlowpath = new List<GameObject>();
                     foreach (var machine in product.Machines)
                     {
-                        Debug.Log(machine);
                         GameObject machineGo = GameObject.Find(machine);
                         tempFlowpath.Add(machineGo);
                     }
@@ -165,9 +159,22 @@ namespace Swift
             }
         }
 
+        void GetLocalPlayer()
+        {
+            GameObject[] playersEntities = GameObject.FindGameObjectsWithTag("Player");
+            foreach (var player in playersEntities)
+            {
+                if (player.GetComponent<NetworkIdentity>().isLocalPlayer)
+                {
+                    localPlayer = player;
+                }
+            }
+        }
+
         IEnumerator AutoRefreshFlows()
         {
             yield return new WaitForSeconds(0.1f);
+            GetLocalPlayer();
             if (!IsDataLoaded)
             {
                 LoadFlowsData();

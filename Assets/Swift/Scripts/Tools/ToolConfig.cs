@@ -1,8 +1,9 @@
-﻿using System.Collections;
+﻿using Swift.UI;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace Swift
+namespace Swift.Tools
 {
     public class ToolConfig : ToolBehaviour
     {

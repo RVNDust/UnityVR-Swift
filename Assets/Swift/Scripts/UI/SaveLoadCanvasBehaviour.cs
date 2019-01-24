@@ -5,7 +5,7 @@ using System.IO;
 using TMPro;
 using UnityEngine;
 
-namespace Swift
+namespace Swift.UI
 {
     public class SaveLoadCanvasBehaviour : CanvasBehaviour
     {
@@ -35,8 +35,8 @@ namespace Swift
             ConfigData.SavingPaths sp = ConfigData.Instance.LoadConfigData(ConfigElement.Paths) as ConfigData.SavingPaths;
             layoutPath = sp.Layouts;
 
-            if (!Directory.Exists(Application.streamingAssetsPath + layoutPath))
-                Directory.CreateDirectory(Application.streamingAssetsPath + layoutPath);
+            if (!Directory.Exists(Application.dataPath + "/StreamingAssets" + layoutPath))
+                Directory.CreateDirectory(Application.dataPath + "/StreamingAssets" + layoutPath);
         }
 
         // Update is called once per frame
@@ -54,7 +54,7 @@ namespace Swift
             }
             currentConfigList.Clear();
             //Gets all the json files in the StreamingAssets/SavedLayout/ repertory
-            string[] configFiles = Directory.GetFiles(Application.streamingAssetsPath + layoutPath, "*.json");
+            string[] configFiles = Directory.GetFiles(Application.dataPath + "/StreamingAssets" + layoutPath, "*.json");
             //For each config file we create a button with the name of the file
             foreach (var filePath in configFiles)
             {

@@ -4,10 +4,11 @@ using System.Collections.Generic;
 using UnityEngine;
 
 
-namespace Swift
+namespace Swift.UI
 {
     public class SaveConfigButton : ButtonBehaviour
     {
+        public Animator popupNotifRef;
 
         // Use this for initialization
         void Start()
@@ -21,9 +22,18 @@ namespace Swift
             AwakeBehaviour();
         }
 
-        protected override void OnClick()
+        public override void OnClick()
         {
             PlantLayoutData.Instance.SaveMachineConfigToJson();
+            if (popupNotifRef != null)
+                StartCoroutine(PopupDelay());
+        }
+
+        IEnumerator PopupDelay()
+        {
+            popupNotifRef.SetBool("active", true);
+            yield return new WaitForSeconds(.5f);
+            popupNotifRef.SetBool("active", false);
         }
     }
 }

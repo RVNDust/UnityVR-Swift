@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 
-namespace Swift
+namespace Swift.UI
 {
     public class LoadConfigButton : ButtonBehaviour
     {
@@ -22,7 +22,7 @@ namespace Swift
             window = GetComponentInParent<CanvasBehaviour>();
         }
 
-        protected override void OnClick()
+        public override void OnClick()
         {
             //btn.interactable = false;
             window.GetComponent<SaveLoadCanvasBehaviour>().LoadAndDisplayMachineConfigs();

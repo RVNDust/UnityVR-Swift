@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace Swift
+namespace Swift.Interactions
 {
     public class VR_InteractableObject : MonoBehaviour
     {
@@ -10,6 +10,7 @@ namespace Swift
         [HideInInspector] public new Rigidbody rigidbody;
         [HideInInspector] public bool originalKinematicState;
         [HideInInspector] public Transform originalParent;
+        [HideInInspector] public Vector3 originalLocalPosition;
         Collider[] collidersCollection;
 
         void Awake()
@@ -33,6 +34,7 @@ namespace Swift
         /// </summary>
         public void SetOriginalState()
         {
+            transform.localPosition = originalLocalPosition;
             transform.parent = originalParent;
             rigidbody.isKinematic = originalKinematicState;
             foreach (var item in collidersCollection)

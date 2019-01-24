@@ -29,6 +29,20 @@ namespace Swift.Data
 
         GameObject[] GOmachines;
         Animator popupNotifAnim;
+        string layoutPath;
+        GameObject localPlayer;
+
+        void GetLocalPlayer()
+        {
+            GameObject[] playersEntities = GameObject.FindGameObjectsWithTag("Player");
+            foreach (var player in playersEntities)
+            {
+                if (player.GetComponent<NetworkIdentity>().isLocalPlayer)
+                {
+                    localPlayer = player;
+                }
+            }
+        }
 
         void Awake()
         {
@@ -37,10 +51,8 @@ namespace Swift.Data
         }
         void Start()
         {
-            if (GOmachines == null)
-            {
-                GOmachines = GameObject.FindGameObjectsWithTag("Machine");
-            }
+            ConfigData.SavingPaths sp = ConfigData.Instance.LoadConfigData(ConfigElement.Paths) as ConfigData.SavingPaths;
+            layoutPath = sp.Layouts;
         }
         
         private GameObject GetPlayerReference()
@@ -55,6 +67,21 @@ namespace Swift.Data
                 }
             }
             return null;
+        }
+
+        void Update()
+        {
+            if (localPlayer != null)
+            {
+                if (GOmachines == null)
+                {
+                    GOmachines = GameObject.FindGameObjectsWithTag("Machine");
+                }
+            }
+            else
+            {
+                localPlayer = GetPlayerReference();
+            }
         }
 
         /// <summary>
@@ -74,9 +101,7 @@ namespace Swift.Data
 
                 machinesJson.machinesList.Add(currentMachine);
             }
-            JsonUtils.Instance.SaveToJson(Application.streamingAssetsPath + "/SavedLayouts/", JsonUtils.Instance.GenerateFileName(), machinesJson);
-            //popupNotifAnim.SetBool("active", true);
-            //StartCoroutine(addDelay(2f));
+            JsonUtils.Instance.SaveToJson(Application.dataPath + "/StreamingAssets" + layoutPath, JsonUtils.Instance.GenerateFileName(), machinesJson);
         }
 
         /// <summary>
@@ -90,15 +115,6 @@ namespace Swift.Data
                 //Pass the json to JsonUtility and create a RootObject (the list of every machines in the savefile)
                 GameObject userMe = GetPlayerReference();
                 userMe.GetComponent<VR_CameraRigMultiuser>().CmdLoadLayoutConfiguration(machinesConfig);
-                //For each machine saved we change the Pos/Rot values of the corresponding GameObject
-                //foreach (var machine in machinesJson.machinesList)
-                //{
-                //    GameObject tempMachine = GameObject.Find(machine.MachineName);
-                //    userMe.GetComponent<VR_CameraRigMultiuser>().CmdTakeControl(tempMachine);
-                //    tempMachine.transform.position = machine.MachinePosition;
-                //    tempMachine.transform.rotation = machine.MachineRotation;
-                //    userMe.GetComponent<VR_CameraRigMultiuser>().CmdLoseControl(tempMachine);
-                //}
             }
             else
             {

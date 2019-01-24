@@ -5,7 +5,7 @@ using UnityEngine;
 using UnityEngine.Networking;
 using UnityEngine.UI;
 
-namespace Swift
+namespace Swift.UI
 {
     public class RadarCanvasBehaviour : CanvasBehaviour
     {

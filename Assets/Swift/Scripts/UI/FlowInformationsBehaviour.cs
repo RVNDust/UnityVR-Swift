@@ -1,11 +1,12 @@
-﻿using System;
+﻿using Swift.Flow;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace Swift
+namespace Swift.UI
 {
     public class FlowInformationsBehaviour : MonoBehaviour
     {

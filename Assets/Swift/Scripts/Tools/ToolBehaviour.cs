@@ -1,10 +1,11 @@
-﻿using System.Collections;
+﻿using Swift.Interactions;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Networking;
 using Valve.VR;
 
-namespace Swift
+namespace Swift.Tools
 {
     public class ToolBehaviour : MonoBehaviour
     {

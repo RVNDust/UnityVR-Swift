@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace Swift
+namespace Swift.UI
 {
     public class WindowsManager : MonoBehaviour
     {

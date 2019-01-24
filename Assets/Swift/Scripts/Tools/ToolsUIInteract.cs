@@ -7,8 +7,9 @@ using UnityEngine.UI;
 using UnityEngine.EventSystems;
 using System.Collections.Generic;
 using Valve.VR;
+using Swift.UI;
 
-namespace Swift
+namespace Swift.Tools
 {
     public class ToolsUIInteract : ToolBehaviour
     {
@@ -48,12 +49,25 @@ namespace Swift
                     if (SteamVR_Input._default.inActions.InteractUI.GetStateDown(controller))
                     {
                         haptics.Execute(0, .05f, 50, .25f, controller);
-                        PointerEventData pointerEventData = new PointerEventData(EventSystem.current);
+                        MarkerEventData pointerEventData = new MarkerEventData(EventSystem.current, hit.transform);
                         if (hit.collider.GetComponent<IPointerClickHandler>() != null)
                         {
                             hit.collider.GetComponent<IPointerClickHandler>().OnPointerClick(pointerEventData);
                         }
+                        if (hit.collider.GetComponent<IPointerDownHandler>() != null)
+                        {
+                            hit.collider.GetComponent<IPointerDownHandler>().OnPointerDown(pointerEventData);
+                        }
                     }
+
+                    //if (SteamVR_Input._default.inActions.InteractUI.GetStateUp(controller))
+                    //{
+                    //    MarkerEventData pointerEventData = new MarkerEventData(EventSystem.current, hit.transform);
+                    //    if (hit.collider.GetComponent<IPointerUpHandler>() != null)
+                    //    {
+                    //        hit.collider.GetComponent<IPointerUpHandler>().OnPointerUp(pointerEventData);
+                    //    }
+                    //}
                 }
                 else
                 {
@@ -69,6 +83,16 @@ namespace Swift
         void MarkerPositioning(RaycastHit hit)
         {
             markerInstance.transform.position = hit.point;
+        }
+    }
+
+    public class MarkerEventData : PointerEventData
+    {
+        public Transform Marker;
+
+        public MarkerEventData(EventSystem eventSystem, Transform marker) : base(eventSystem)
+        {
+            Marker = marker;
         }
     }
 }

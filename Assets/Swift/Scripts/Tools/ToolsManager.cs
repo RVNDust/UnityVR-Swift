@@ -5,7 +5,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using Valve.VR;
 
-namespace Swift
+namespace Swift.Tools
 {
     public class ToolsManager : MonoBehaviour
     {

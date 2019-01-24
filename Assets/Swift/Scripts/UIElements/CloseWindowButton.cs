@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace Swift
+namespace Swift.UI
 {
     public class CloseWindowButton : ButtonBehaviour
     {
@@ -19,7 +19,7 @@ namespace Swift
             StartBehaviour();
         }
 
-        protected override void OnClick()
+        public override void OnClick()
         {
             window.gameObject.SetActive(false);   
         }

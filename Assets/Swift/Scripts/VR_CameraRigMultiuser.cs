@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using Swift.Tools;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Networking;
@@ -16,6 +17,11 @@ namespace Swift
         // reference to SteamController
         public GameObject SteamVRLeft, SteamVRRight, SteamVRCamera;
         public GameObject UserOtherLeftHandModel, UserOtherRightHandModel;
+
+        public SteamVR_Behaviour_Pose behaviourPosLeft, behaviourPosRight;
+        public ToolsManager tmLeft, tmRight;
+        public ToolBehaviour tpLeft, tpRight, uiInteractLeft, uiInteractRight;
+
         private GameObject goFreeLookCameraRig;
 
         // Use this for initialization
@@ -91,6 +97,19 @@ namespace Swift
                 // Put it as a child of the SteamVRRight Game Object
                 modelRight.transform.parent = SteamVRRight.transform;
                 modelRight.transform.localPosition = Vector3.zero;
+
+                //Scripts to remove
+                //Remove default tools (tp and ui interact)
+                Destroy(tpLeft);
+                Destroy(tpRight);
+                Destroy(uiInteractLeft);
+                Destroy(uiInteractRight);
+                //Remove tool manager
+                Destroy(tmLeft);
+                Destroy(tmRight);
+                //Remove SteamVR_Behaviour_Pose
+                Destroy(behaviourPosLeft);
+                Destroy(behaviourPosRight);
             }
         }
 
@@ -124,6 +143,7 @@ namespace Swift
             Swift.Data.PlantLayoutData.RootObject machinesJson = JsonUtility.FromJson<Swift.Data.PlantLayoutData.RootObject>(jsonContent);
             foreach (var machine in machinesJson.machinesList)
             {
+                Debug.Log(machine.MachineName);
                 GameObject tempMachine = GameObject.Find(machine.MachineName);
                 tempMachine.transform.position = machine.MachinePosition;
                 tempMachine.transform.rotation = machine.MachineRotation;

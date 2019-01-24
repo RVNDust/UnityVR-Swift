@@ -1,15 +1,16 @@
-﻿using System.Collections;
+﻿using Swift.Flow;
+using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace Swift
+namespace Swift.UI
 {
     public class FlowpathActivationButton : ButtonBehaviour
     {
         FlowInformationsBehaviour fib;
-        public bool activationState = false;
+        public bool activationState;
         public Color baseColor;
 
         public Color inactiveColor = Color.gray;
@@ -17,20 +18,20 @@ namespace Swift
         void Awake()
         {
             AwakeBehaviour();
+            activationState = true;
             fib = GetComponentInParent<FlowInformationsBehaviour>();
         }
 
         void Start()
         {
             StartBehaviour();
-            baseColor = btn.GetComponent<Image>().color;
             if(baseColor == null)
             {
                 baseColor = Color.blue;
             }
         }
 
-        protected override void OnClick()
+        public override void OnClick()
         {
             activationState = !activationState;
             FlowManager.Instance.ToggleSelectedFlowPath(activationState, fib.ProductValue);

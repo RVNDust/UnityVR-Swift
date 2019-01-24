@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace Swift
+namespace Swift.UI
 {
     public class ReloadWindowButton : ButtonBehaviour {
 
@@ -22,7 +22,7 @@ namespace Swift
             StartBehaviour();
         }
 
-        protected override void OnClick()
+        public override void OnClick()
         {
             if (onReloadWindow != null)
                 onReloadWindow();

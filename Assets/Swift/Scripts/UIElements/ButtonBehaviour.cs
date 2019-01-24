@@ -5,7 +5,7 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
-namespace Swift
+namespace Swift.UI
 {
     public class ButtonBehaviour : MonoBehaviour
     {
@@ -43,7 +43,7 @@ namespace Swift
             btn.onClick.AddListener(OnClick);
         }
 
-        protected virtual void OnClick()
+        public virtual void OnClick()
         { 
             //TODO Déclencher changement d'état du bouton
         }

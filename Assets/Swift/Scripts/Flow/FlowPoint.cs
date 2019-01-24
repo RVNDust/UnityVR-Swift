@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace Swift
+namespace Swift.Flow
 {
     public class FlowPoint : MonoBehaviour
     {

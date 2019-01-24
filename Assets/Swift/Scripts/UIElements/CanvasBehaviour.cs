@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
-namespace Swift
+namespace Swift.UI
 {
     public class CanvasBehaviour : MonoBehaviour, IPointerClickHandler
     {
