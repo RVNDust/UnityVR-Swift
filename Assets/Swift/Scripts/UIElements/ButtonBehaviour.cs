@@ -33,8 +33,11 @@ namespace Swift
         protected void StartBehaviour()
         {
             boxCollider.isTrigger = true;
-            //Vector3 boxSize = new Vector3(btn.GetComponent<RectTransform>().rect.width, btn.GetComponent<RectTransform>().rect.height, -1);
+
+            //Vector3 boxSize = new Vector3(btn.GetComponent<RectTransform>().sizeDelta.x , btn.GetComponent<RectTransform>().rect.height, -1);
+            //Debug.Log(boxSize);
             boxCollider.size = new Vector3(100, 50, 1);
+            //boxCollider.size = boxSize;
             boxCollider.center = new Vector3(0, 0, -1);
 
             btn.onClick.AddListener(OnClick);

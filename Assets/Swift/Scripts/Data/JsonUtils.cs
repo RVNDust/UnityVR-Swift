@@ -56,6 +56,8 @@ namespace Swift.Data
         {
             string jsonContent = "";
             jsonContent = JsonUtility.ToJson(serializedObject);
+            if (!Directory.Exists(folderPath))
+                Directory.CreateDirectory(folderPath);
             File.WriteAllText(folderPath + fileName, jsonContent);
         }
 

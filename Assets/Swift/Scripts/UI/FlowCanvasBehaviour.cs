@@ -1,6 +1,8 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace Swift
 {
@@ -10,7 +12,12 @@ namespace Swift
         
         public GameObject CreateProductInformations(GameObject informations)
         {
-            return Instantiate(informations, container.transform);
+            GameObject go = Instantiate(informations, container.transform);
+            FlowpathActivationButton fab = go.GetComponent<FlowInformationsBehaviour>().button.GetComponent<FlowpathActivationButton>();
+            fab.GetComponent<Image>().color = fab.inactiveColor;
+            fab.GetComponentInChildren<TextMeshProUGUI>().text = "OFF";
+            fab.activationState = false;
+            return go;
         }
     }
 }

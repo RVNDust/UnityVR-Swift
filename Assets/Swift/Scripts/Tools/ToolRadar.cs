@@ -8,6 +8,7 @@ namespace Swift
     public class ToolRadar : ToolBehaviour {
 
         public GameObject RadarWindowPrefab;
+        public GameObject RadarContainer;
 
         void Start()
         {
@@ -27,6 +28,7 @@ namespace Swift
         public override void ActivateTool(GameObject goRef)
         {
             StartBehaviour();
+            RadarContainer = gameObject;
             RadarCanvasBehaviour window = vrPlayer.GetComponent<WindowsManager>().CreateWindow(RadarWindowPrefab).GetComponent<RadarCanvasBehaviour>(); //Délègue la création de la fenêtre
         }
 

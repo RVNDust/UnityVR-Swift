@@ -58,6 +58,11 @@ namespace Swift
             interactable.GetOriginalState();
 
             interactable.rigidbody.isKinematic = true;
+            Collider[] collidersCollection = gameObject.GetComponentsInChildren<Collider>();
+            foreach (var item in collidersCollection)
+            {
+                item.isTrigger = false;
+            }
             transform.SetParent(controller.gameObject.transform);
 
             controllerReference = controller;

@@ -25,7 +25,7 @@ namespace Swift
         protected void StartBehaviour()
         {
             manager = GetComponent<ToolsManager>();
-            if(GetComponent<SteamVR_Behaviour_Pose>() != null)
+            if (GetComponent<SteamVR_Behaviour_Pose>() != null)
                 controller = GetComponent<SteamVR_Behaviour_Pose>().inputSource;
             GetPlayerReference();
         }

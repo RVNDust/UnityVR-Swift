@@ -43,7 +43,7 @@ namespace Swift.Data
         void Awake()
         {
             Instance = this;
-            configFilePath = Application.streamingAssetsPath + "/ConfigFile.json";
+            configFilePath = Application.dataPath + "/StreamingAssets" + "/ConfigFile.json";
         }
 
         public object LoadConfigData(ConfigElement selectedContent)

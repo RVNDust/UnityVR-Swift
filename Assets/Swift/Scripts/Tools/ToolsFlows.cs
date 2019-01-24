@@ -29,7 +29,7 @@ namespace Swift
             StartBehaviour();
             FlowCanvasBehaviour window = vrPlayer.GetComponent<WindowsManager>().CreateWindow(FlowWindowPrefab).GetComponent<FlowCanvasBehaviour>(); //Délègue la création de la fenêtre
             goRef.AddComponent<ToolsFlows>(); //Ajout du comportement spécifique sur le controller
-            FlowManager.Instance.ToggleDisplayFlowPath(true); //Active l'affichage des flux
+            //FlowManager.Instance.ToggleDisplayFlowPath(true); //Active l'affichage des flux
             if(!FlowManager.Instance.IsFilled)
             { 
                 foreach (var item in FlowManager.Instance.productFlows)
@@ -46,7 +46,6 @@ namespace Swift
         public override void DesactivateTool(GameObject goRef)
         {
             vrPlayer.GetComponent<WindowsManager>().ToggleWindowState(FlowWindowPrefab, false);
-            FlowManager.Instance.ToggleDisplayFlowPath(false);
             Destroy(goRef.GetComponent<ToolsFlows>());
         }
     }

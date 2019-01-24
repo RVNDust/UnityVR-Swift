@@ -10,16 +10,20 @@ namespace Swift
         public GameObject ArrowHead;
         public Vector3 StartSavedPosition = Vector3.zero, EndSavedPosition = Vector3.zero;
 
-        public FlowPathBehaviour(FlowPoint A, FlowPoint B)
+        public FlowPathBehaviour(FlowPoint A, FlowPoint B, GameObject arrow)
         {
             Start = A;
             End = B;
+            ArrowHead = arrow;
         }
 
         public void UpdateSavedPositions()
         {
-            StartSavedPosition = Start.transform.position;
-            EndSavedPosition = End.transform.position;
+            if(Start != null && End != null)
+            {
+                StartSavedPosition = Start.transform.position;
+                EndSavedPosition = End.transform.position;
+            }
 
             if(ArrowHead != null)
                 ArrowHead.transform.position = EndSavedPosition;

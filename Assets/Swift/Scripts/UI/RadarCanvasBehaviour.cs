@@ -11,7 +11,7 @@ namespace Swift
     {
         GameObject localPlayer;
         List<GameObject> playerOthers = new List<GameObject>();
-        Dictionary<GameObject, GameObject> playerOthersRepresentation = new Dictionary<GameObject, GameObject>();
+        Dictionary<GameObject, UserRepresentation> playerOthersRepresentation = new Dictionary<GameObject, UserRepresentation>();
         GameObject networkManager;
         int numPlayers = 0;
 
@@ -37,22 +37,7 @@ namespace Swift
 
             GetAllPlayers();
 
-            networkManager.GetComponent<NetworkManagerMultiConfig>().onServerAddPlayerEvent += RadarCanvasBehaviour_onServerAddPlayerEvent;
-            networkManager.GetComponent<NetworkManagerMultiConfig>().onServerRemovePlayerEvent += RadarCanvasBehaviour_onServerRemovePlayerEvent;
-
             StartCoroutine(UpdateRadar());
-        }
-
-        private void RadarCanvasBehaviour_onServerRemovePlayerEvent(GameObject playerRef)
-        {
-            if(playerOthers.Contains(playerRef))
-                playerOthers.Remove(playerRef);
-        }
-
-        private void RadarCanvasBehaviour_onServerAddPlayerEvent(GameObject playerRef)
-        {
-            Debug.Log("Event Ok");
-            playerOthers.Add(playerRef);
         }
 
         public IEnumerator UpdateRadar()
@@ -67,7 +52,7 @@ namespace Swift
                 {
                     if(!playerOthers.Contains(item.Key))
                     {
-                        Destroy(item.Value);
+                        Destroy(item.Value.Representation);
                         toRemove.Add(item.Key);
                     }
                 }
@@ -97,10 +82,14 @@ namespace Swift
                 float angleUserOther = Vector3.Angle(localPlayer.transform.position, userOther.transform.position);
                 posX = 105;
                 posY = 0;
-                playerOthersRepresentation[userOther].GetComponentInChildren<Image>().color = outOfRange;
-                playerOthersRepresentation[userOther].GetComponentInChildren<Image>().transform.localPosition = new Vector3(posX, posY, 0);
-                playerOthersRepresentation[userOther].GetComponentInChildren<Image>().transform.localRotation = Quaternion.Euler(new Vector3(0,0,90));
-                playerOthersRepresentation[userOther].transform.Rotate(Vector3.forward, angleUserOther, Space.Self);
+                GameObject representation = playerOthersRepresentation[userOther].Representation;
+                representation.GetComponentInChildren<Image>().color = outOfRange;
+                representation.GetComponentInChildren<Image>().transform.localPosition = new Vector3(posX, posY, 0);
+                representation.GetComponentInChildren<Image>().transform.localRotation = Quaternion.Euler(new Vector3(0,0,90));
+                representation.transform.localRotation = Quaternion.Euler(0,0,angleUserOther);
+                UserRepresentation ur = playerOthersRepresentation[userOther];
+                ur.Angle = angleUserOther;
+                playerOthersRepresentation[userOther] = ur;
             }
             else
             {
@@ -108,9 +97,10 @@ namespace Swift
                 Vector3 posDiff = userOther.transform.position - localPlayer.transform.position;
                 posX = posDiff.x * ScaleFactor;
                 posY = posDiff.z * ScaleFactor;
-                playerOthersRepresentation[userOther].GetComponentInChildren<Image>().color = inRange;
-                playerOthersRepresentation[userOther].GetComponentInChildren<Image>().transform.localPosition = new Vector3(posX, posY, 0);
-                playerOthersRepresentation[userOther].GetComponentInChildren<Image>().transform.localRotation = Quaternion.Euler(new Vector3(0,0, userOther.transform.rotation.y));
+                GameObject representation = playerOthersRepresentation[userOther].Representation;
+                representation.GetComponentInChildren<Image>().color = inRange;
+                representation.GetComponentInChildren<Image>().transform.localPosition = new Vector3(posX, posY, 0);
+                representation.GetComponentInChildren<Image>().transform.localRotation = Quaternion.Euler(new Vector3(0,0, userOther.transform.eulerAngles.y));
             }
 
         }
@@ -121,7 +111,7 @@ namespace Swift
             {
                 //Create userOther representation
                 GameObject tmp = Instantiate(UserOtherPrefab, UserOtherContainer.transform);
-                playerOthersRepresentation.Add(userOther, tmp);
+                playerOthersRepresentation.Add(userOther, new UserRepresentation(tmp, 0));
             }
         }
 
@@ -141,6 +131,18 @@ namespace Swift
                     playerOthers.Add(player);
                 }
             }
+        }
+    }
+
+    public struct UserRepresentation
+    {
+        public GameObject Representation;
+        public float Angle;
+
+        public UserRepresentation(GameObject go, float a)
+        {
+            Representation = go;
+            Angle = a;
         }
     }
 }

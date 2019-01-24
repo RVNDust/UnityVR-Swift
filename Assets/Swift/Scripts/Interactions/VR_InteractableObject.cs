@@ -10,6 +10,7 @@ namespace Swift
         [HideInInspector] public new Rigidbody rigidbody;
         [HideInInspector] public bool originalKinematicState;
         [HideInInspector] public Transform originalParent;
+        Collider[] collidersCollection;
 
         void Awake()
         {
@@ -24,6 +25,7 @@ namespace Swift
         {
             originalParent = transform.parent;
             originalKinematicState = rigidbody.isKinematic;
+            collidersCollection = gameObject.GetComponentsInChildren<Collider>();
         }
 
         /// <summary>
@@ -33,6 +35,10 @@ namespace Swift
         {
             transform.parent = originalParent;
             rigidbody.isKinematic = originalKinematicState;
+            foreach (var item in collidersCollection)
+            {
+                item.isTrigger = false;
+            }
         }
 
         /// <summary>

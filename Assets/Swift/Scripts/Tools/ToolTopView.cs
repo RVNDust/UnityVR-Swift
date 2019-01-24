@@ -34,22 +34,18 @@ namespace Swift
 
         void Update()
         {
-            if (SteamVR_Input._default.inActions.GrabGrip.GetStateUp(controller) || Input.GetKey("ToggleCamera"))
+            if(player.GetComponent<NetworkIdentity>().isLocalPlayer)
             {
-                Vector3 pos = new Vector3(player.transform.position.x, player.transform.position.y, player.transform.position.z);
-                //Toggle between plan
-                switch (mode)
+                if (SteamVR_Input._default != null)
                 {
-                    case ViewMode.Normal:
-                        mode = ViewMode.Top;
-                        pos.y = TopViewPlane.transform.position.y + YOffset;
-                        player.transform.position = pos;
-                        break;
-                    case ViewMode.Top:
-                        mode = ViewMode.Normal;
-                        pos.y = 0;
-                        player.transform.position = pos;
-                        break;
+                    if (SteamVR_Input._default.inActions.GrabGrip.GetStateUp(controller))
+                    {
+                        TogglePlan();
+                    }
+                }
+                if (Input.GetButtonUp("ToggleCamera"))
+                {
+                    TogglePlan();
                 }
             }
         }
@@ -73,6 +69,25 @@ namespace Swift
         public override void DesactivateTool(GameObject goRef)
         {
             Destroy(goRef.GetComponent<ToolTopView>());
+        }
+
+        private void TogglePlan()
+        {
+            Vector3 pos = new Vector3(player.transform.position.x, player.transform.position.y, player.transform.position.z);
+            //Toggle between plan
+            switch (mode)
+            {
+                case ViewMode.Normal:
+                    mode = ViewMode.Top;
+                    pos.y = TopViewPlane.transform.position.y + YOffset;
+                    player.transform.position = pos;
+                    break;
+                case ViewMode.Top:
+                    mode = ViewMode.Normal;
+                    pos.y = 0;
+                    player.transform.position = pos;
+                    break;
+            }
         }
     }
 

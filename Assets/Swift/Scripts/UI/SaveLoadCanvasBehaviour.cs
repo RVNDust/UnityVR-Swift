@@ -9,8 +9,14 @@ namespace Swift
 {
     public class SaveLoadCanvasBehaviour : CanvasBehaviour
     {
+        public ReloadWindowButton ReloadButton;
+
         public GameObject configContainer;
         public GameObject configButtonPrefab;
+        public GameObject popupObject;
+
+        List<GameObject> currentConfigList = new List<GameObject>();
+        string layoutPath;
 
         // Use this for initialization
         void Start()
@@ -23,6 +29,14 @@ namespace Swift
             {
                 item.gameObject.SetActive(true);
             }
+
+            ReloadButton.onReloadWindow += LoadAndDisplayMachineConfigs;
+
+            ConfigData.SavingPaths sp = ConfigData.Instance.LoadConfigData(ConfigElement.Paths) as ConfigData.SavingPaths;
+            layoutPath = sp.Layouts;
+
+            if (!Directory.Exists(Application.streamingAssetsPath + layoutPath))
+                Directory.CreateDirectory(Application.streamingAssetsPath + layoutPath);
         }
 
         // Update is called once per frame
@@ -34,22 +48,23 @@ namespace Swift
         public void LoadAndDisplayMachineConfigs()
         {
             configContainer.SetActive(true);
-
-            if (!PlantLayoutData.Instance.IsConfigLoaded)
+            foreach (var item in currentConfigList)
             {
-                PlantLayoutData.Instance.IsConfigLoaded = true;
-                //Gets all the json files in the StreamingAssets/SavedLayout/ repertory
-                string[] configFiles = Directory.GetFiles(Application.streamingAssetsPath + "/SavedLayout/", "*.json");
-                //For each config file we create a button with the name of the file
-                foreach (var filePath in configFiles)
-                {
-                    string fileName = Path.GetFileNameWithoutExtension(filePath);
-                    GameObject newButton = Instantiate(configButtonPrefab);
-                    //Set the parent element of the button
-                    newButton.transform.SetParent(configContainer.transform, false);
-                    newButton.GetComponentInChildren<TextMeshProUGUI>().text = fileName;
-                    newButton.GetComponent<LoadSelectedConfigButton>().fileName = filePath;
-                }
+                Destroy(item);
+            }
+            currentConfigList.Clear();
+            //Gets all the json files in the StreamingAssets/SavedLayout/ repertory
+            string[] configFiles = Directory.GetFiles(Application.streamingAssetsPath + layoutPath, "*.json");
+            //For each config file we create a button with the name of the file
+            foreach (var filePath in configFiles)
+            {
+                string fileName = Path.GetFileNameWithoutExtension(filePath);
+                GameObject newButton = Instantiate(configButtonPrefab);
+                //Set the parent element of the button
+                newButton.transform.SetParent(configContainer.transform, false);
+                newButton.GetComponentInChildren<TextMeshProUGUI>().text = fileName;
+                newButton.GetComponent<LoadSelectedConfigButton>().fileName = filePath;
+                currentConfigList.Add(newButton);
             }
         }
     }

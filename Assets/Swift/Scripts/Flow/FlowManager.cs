@@ -26,6 +26,7 @@ namespace Swift
         public NetworkManager networkManager;
 
         public bool IsFilled = false;
+        public bool IsDataLoaded = false;
         public GameObject arrowRef;
 
         public List<GameObject> FlowpathA = new List<GameObject>();
@@ -46,13 +47,15 @@ namespace Swift
         {
             Instance = this;
             flowsContainer = new GameObject("FlowsContainer");
-            StartCoroutine(Delays());
+            LoadFlowsData();
+            StartCoroutine(AutoRefreshFlows());
         }
 
         private void LoadFlowsData()
         {
             if(networkManager.IsClientConnected())
             {
+                IsDataLoaded = true;
                 ConfigData.Flows flowsData = ConfigData.Instance.LoadConfigData(ConfigElement.Flows) as ConfigData.Flows;
                 foreach (var product in flowsData.Products)
                 {
@@ -73,9 +76,8 @@ namespace Swift
                     CreateFlowPath(tempFlowpath, product.Name);
                 }
 
-                ToggleDisplayFlowPath(true);
+                ToggleDisplayFlowPath(false);
             }
-            StartCoroutine(AutoRefreshFlows());
         }
 
         public void CreateFlowPath(List<GameObject> flowpathList, string productType)
@@ -99,7 +101,7 @@ namespace Swift
                         enter = flowpoints[i];
                     }
                 }
-                if (lastFlowpoint != null)
+                if (lastFlowpoint != null && enter != null)
                 {
                     GameObject flowpath = new GameObject("Flowpath");
                     flowpath.transform.parent = flowsContainer.transform;
@@ -131,15 +133,18 @@ namespace Swift
 
         public void UpdateFlowPath()
         {
-            foreach (var item in productFlows)
+            if (IsDataLoaded)
             {
-                foreach (var flowpath in item.Value)
+                foreach (var item in productFlows)
                 {
-                    FlowPathBehaviour fb = flowpath.GetComponent<FlowPathBehaviour>();
-                    fb.UpdateSavedPositions();
-                    LineRenderer lr = flowpath.GetComponent<LineRenderer>();
-                    Vector3[] flowpathPositions = { fb.StartSavedPosition, fb.EndSavedPosition};
-                    lr.SetPositions(flowpathPositions);
+                    foreach (var flowpath in item.Value)
+                    {
+                        FlowPathBehaviour fb = flowpath.GetComponent<FlowPathBehaviour>();
+                        fb.UpdateSavedPositions();
+                        LineRenderer lr = flowpath.GetComponent<LineRenderer>();
+                        Vector3[] flowpathPositions = { fb.StartSavedPosition, fb.EndSavedPosition };
+                        lr.SetPositions(flowpathPositions);
+                    }
                 }
             }
         }
@@ -162,15 +167,13 @@ namespace Swift
 
         IEnumerator AutoRefreshFlows()
         {
-            UpdateFlowPath();
             yield return new WaitForSeconds(0.1f);
+            if (!IsDataLoaded)
+            {
+                LoadFlowsData();
+            }
+            UpdateFlowPath();
             StartCoroutine(AutoRefreshFlows());
-        }
-
-        IEnumerator Delays()
-        {
-            yield return new WaitForSeconds(5.0f);
-            LoadFlowsData();
         }
     }
 }

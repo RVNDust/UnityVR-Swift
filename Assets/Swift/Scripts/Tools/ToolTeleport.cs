@@ -58,8 +58,8 @@ namespace Swift
                 Vector3 targetPos = cp.TargetPosition;
                 Vector3 offset = new Vector3(targetPos.x - cameraRef.x, targetPos.y, targetPos.z - cameraRef.z);
                 cameraRig.transform.position = offset;
-                cp.DesactivatePointer();
             }
+            cp.DesactivatePointer();
             Destroy(cp);
         }
 	}

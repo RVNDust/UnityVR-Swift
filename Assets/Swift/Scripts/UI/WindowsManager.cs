@@ -15,23 +15,28 @@ namespace Swift
             cameraPos = transform.Find("Camera");
         }
 
-        public GameObject CreateWindow(GameObject goRef)
+        public GameObject CreateWindow(GameObject goRef, GameObject container = null, bool placement = true)
         {
+            if(container == null)
+            {
+                container = gameObject;
+            }
             if (!windowsList.ContainsKey(goRef))
             {
-                GameObject window = Instantiate(goRef, gameObject.transform);
+                GameObject window = Instantiate(goRef, container.transform);
 
                 if (window.GetComponent<LookAt>() == null)
                     window.AddComponent<LookAt>().target = cameraPos;
-
-                PlaceWindow(window);
+                if(placement)
+                    PlaceWindow(window);
                 
                 windowsList.Add(goRef, window);
             }
             else
             {
                 ToggleWindowState(goRef, true);
-                PlaceWindow(windowsList[goRef]);
+                if(placement)
+                    PlaceWindow(windowsList[goRef]);
             }
 
             return windowsList[goRef];

@@ -25,7 +25,7 @@ namespace Swift
         private Transform toolCursor;
         private Dictionary<ToolElement, ToolAngleActivation> registeredTools = new Dictionary<ToolElement, ToolAngleActivation>();
         private Dictionary<ToolElement, Animator> animators = new Dictionary<ToolElement, Animator>();
-        private ToolElement activeTool;
+        private ToolElement activeTool, hoveredTool;
         private float toolActivationAngle;
 
         // Use this for initialization
@@ -60,7 +60,7 @@ namespace Swift
                 {
                     DesactivateTool();
                     if (activeTool != currentTool)
-                        haptics.Execute(0, 0.5f, 75, 0.5f, controller);
+                        haptics.Execute(0, .05f, 65, .25f, controller);
                     activeTool = currentTool;
                     ActivateTool();
                 }
@@ -81,10 +81,15 @@ namespace Swift
             {
                 lastRegisteredPosition = SteamVR_Input._default.inActions.RadialMenu.GetAxis(controller);
                 CalculateCurrentAngle();
-                toolCursor.transform.localRotation = Quaternion.Euler(0,0, currentAngle - toolActivationAngle / 2);
+                toolCursor.transform.localRotation = Quaternion.Euler(0,0, currentAngle + toolActivationAngle / 2);
             }
 
             ToolElement currentTool = CheckActiveTool();
+            if(hoveredTool != null && currentTool != hoveredTool)
+            {
+                haptics.Execute(0, 0.05f, 50, 0.3f, controller);
+            }
+            hoveredTool = currentTool;
             foreach (var item in animators)
             {
                 if(item.Key != currentTool)
@@ -126,7 +131,7 @@ namespace Swift
                     toolItem.GetComponentInChildren<ToolInfoBehaviour>().UpdateInfo(item.name, item.icon);
                     toolItem.GetComponentInChildren<ToolInfoBehaviour>().UpdateRotation(-ToolsStartAngle);
 
-                    RegisterToolAngle(item, new ToolAngleActivation(ToolsStartAngle, ToolsStartAngle += toolActivationAngle)); 
+                    RegisterToolAngle(item, new ToolAngleActivation(ToolsStartAngle, ToolsStartAngle -= toolActivationAngle)); 
                     animators.Add(item, toolItem.GetComponent<Animator>());
                 }
             }
@@ -144,12 +149,12 @@ namespace Swift
 
         void CalculateCurrentAngle()
         {
-            currentAngle = ((Mathf.Atan2(lastRegisteredPosition.x, lastRegisteredPosition.y) / Mathf.PI) * 180f);
-            if(currentAngle < 0)
+            currentAngle = -((Mathf.Atan2(lastRegisteredPosition.x, lastRegisteredPosition.y) / Mathf.PI) * 180f);
+            if(currentAngle < -360f)
             {
                 currentAngle += 360f;
             }
-            else if(currentAngle > 360f)
+            else if(currentAngle > 0)
             {
                 currentAngle -= 360f;
             }
@@ -164,7 +169,7 @@ namespace Swift
             float cursorState = currentAngle; //- toolActivationAngle / 2;
             foreach (var tool in registeredTools)
             {
-                if(tool.Value.angleStart <= cursorState && cursorState < tool.Value.angleEnd)
+                if(tool.Value.angleStart >= cursorState && cursorState > tool.Value.angleEnd)
                 {
                     return tool.Key;
                 }

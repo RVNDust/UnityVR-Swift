@@ -9,8 +9,8 @@ namespace Swift
     public class FlowpathActivationButton : ButtonBehaviour
     {
         FlowInformationsBehaviour fib;
-        bool activationState = false;
-        Color baseColor;
+        public bool activationState = false;
+        public Color baseColor;
 
         public Color inactiveColor = Color.gray;
 
