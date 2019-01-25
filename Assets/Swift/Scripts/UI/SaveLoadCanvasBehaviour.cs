@@ -13,7 +13,8 @@ namespace Swift.UI
 
         public GameObject configContainer;
         public GameObject configButtonPrefab;
-        public GameObject popupObject;
+
+        [Range(1,12)] public int FileLimits = 12;
 
         List<GameObject> currentConfigList = new List<GameObject>();
         string layoutPath;
@@ -56,8 +57,11 @@ namespace Swift.UI
             //Gets all the json files in the StreamingAssets/SavedLayout/ repertory
             string[] configFiles = Directory.GetFiles(Application.dataPath + "/StreamingAssets" + layoutPath, "*.json");
             //For each config file we create a button with the name of the file
+            int fileCount = 0;
             foreach (var filePath in configFiles)
             {
+                if (fileCount >= FileLimits)
+                    break;
                 string fileName = Path.GetFileNameWithoutExtension(filePath);
                 GameObject newButton = Instantiate(configButtonPrefab);
                 //Set the parent element of the button
@@ -65,6 +69,7 @@ namespace Swift.UI
                 newButton.GetComponentInChildren<TextMeshProUGUI>().text = fileName;
                 newButton.GetComponent<LoadSelectedConfigButton>().fileName = filePath;
                 currentConfigList.Add(newButton);
+                fileCount++;
             }
         }
     }

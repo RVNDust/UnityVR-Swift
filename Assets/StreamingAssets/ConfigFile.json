@@ -5,12 +5,14 @@
         "Name": "A",
         "Color": "#f96f6f",
         "Machines": [
+		  "Enter",
           "F1",
           "F2",
           "T1",
           "P1",
           "F3",
-          "G1"
+          "G1",
+		  "Exit"
         ],
         "Coef":  1
       },
@@ -18,11 +20,13 @@
         "Name": "B",
         "Color": "#ffb060",
         "Machines": [
+		  "Enter",
           "G2",
           "T3",
           "F2",
           "F4",
-          "P2"
+          "P2",
+		  "Exit"
         ],
         "Coef":  5
       },
@@ -30,11 +34,13 @@
         "Name": "C",
         "Color": "#edff56",
         "Machines": [
+		  "Enter",
           "F3",
           "T2",
           "G1",
           "F4",
-          "G2"
+          "G2",
+		  "Exit"
         ],
         "Coef": 3
       },
@@ -42,11 +48,13 @@
         "Name": "D",
         "Color": "#6dff77",
         "Machines": [
+		  "Enter",
           "F1",
           "T1",
           "F3",
           "F2",
-          "G2"
+          "G2",
+		  "Exit"
         ],
         "Coef":  2
       },
@@ -54,10 +62,12 @@
         "Name": "E",
         "Color": "#659eff",
         "Machines": [
+		  "Enter",
           "F3",
           "G1",
           "F4",
-          "P3"
+          "P3",
+		  "Exit"
         ],
         "Coef":  3
       }

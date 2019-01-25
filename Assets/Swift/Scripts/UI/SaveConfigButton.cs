@@ -10,10 +10,12 @@ namespace Swift.UI
     {
         public Animator popupNotifRef;
 
+        SaveLoadCanvasBehaviour window;
         // Use this for initialization
         void Start()
         {
             StartBehaviour();
+            window = GetComponentInParent<SaveLoadCanvasBehaviour>();
         }
 
         // Update is called once per frame
@@ -27,6 +29,8 @@ namespace Swift.UI
             PlantLayoutData.Instance.SaveMachineConfigToJson();
             if (popupNotifRef != null)
                 StartCoroutine(PopupDelay());
+            if (window != null)
+                window.LoadAndDisplayMachineConfigs();
         }
 
         IEnumerator PopupDelay()

@@ -6,7 +6,7 @@ using Valve.VR;
 
 namespace Swift.Tools
 {
-    public class ToolTopViewTPS : ToolBehaviour
+    public class ToolTopViewTPS : MonoBehaviour
     {
         public GameObject TopViewPlane;
         public float YOffset;
@@ -16,7 +16,6 @@ namespace Swift.Tools
 
         void Start()
         {
-            StartBehaviour();
             GameObject[] playersEntities = GameObject.FindGameObjectsWithTag("Player");
             foreach (var p in playersEntities)
             {

@@ -8,6 +8,7 @@ namespace Swift.Tools
     public class ToolScreenshot : ToolBehaviour
     {
         public ScreenshotManager screenshotManager;
+        ToolsManager tm;
 
         void Start()
         {
@@ -19,6 +20,7 @@ namespace Swift.Tools
             if (SteamVR_Input._default.inActions.GrabGrip.GetStateUp(controller))
             {
                 Camera cam = vrPlayer.GetComponentInChildren<Camera>();
+                tm.haptics.Execute(0, 0.05f, 50, 0.3f, controller);
                 screenshotManager.TakeScreenshot(cam);
             }
         }
