@@ -23,7 +23,6 @@ namespace Swift.Data
         }
 
         public static PlantLayoutData Instance { get; private set; }
-        public GameObject PopUpNotif;
         public GameObject vrPlayer;
         [HideInInspector] public bool IsConfigLoaded = false;
 
@@ -113,8 +112,7 @@ namespace Swift.Data
             if (machinesConfig != "")
             {
                 //Pass the json to JsonUtility and create a RootObject (the list of every machines in the savefile)
-                GameObject userMe = GetPlayerReference();
-                userMe.GetComponent<VR_CameraRigMultiuser>().CmdLoadLayoutConfiguration(machinesConfig);
+                localPlayer.GetComponent<VR_CameraRigMultiuser>().CmdLoadLayoutConfiguration(machinesConfig);
             }
             else
             {
@@ -125,7 +123,6 @@ namespace Swift.Data
         IEnumerator addDelay(float delay)
         {
             yield return new WaitForSeconds(delay);
-            //popupNotifAnim.SetBool("active", false);
         }
     }
 }
